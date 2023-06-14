@@ -67,9 +67,19 @@ def read_test1():
     hello.delay("Marcos Antonio de Carvalho")
     # Ações em cadeia pipeline (chains) do Evento
     c.delay()
-    # retorno da função do Evento
-    fib.delay(18)
-    return {"celery": "postman"}
+
+
+
+    # retorno da tarefa e um Evento
+    # com controle de estado
+    arg1 = 18
+    process = fib.apply_async(args=(arg1,))   #fib.delay(18)
+    #state = process.state
+
+    return f"Thanks for your patience, your job {process.task_id} \
+             is being processed. Status {process.state}"
+
+    #return {"celery": "postman"}
 
 
 # Roteamento e controle de Evento
