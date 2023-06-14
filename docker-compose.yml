@@ -1,0 +1,114 @@
+#---
+# Author: Marcos Antonio de Carvalho (maio/2023)
+# Descr.: Construção da infraestrutura Event-Driven-Stack 
+#         Construida em containers Docker:
+#         - rabbitmq
+#         - flower
+#         - postman (Python - FastAPI e Celery)
+#         - celery  (Python - Celery)
+#---
+
+version: "3.7"
+
+##------------##     
+##  Networks  ##
+##------------##
+networks:
+  backend: # Rede do backend stack
+
+##------------##     
+##  Services  ##
+##------------##
+services:
+
+  rabbitmq:
+    # http://localhost:15692/metrics
+    build: 
+      context: .
+      dockerfile: dockerfiles/rabbitmq/Dockerfile
+    image: koruja/rabbitmq:events-driven-stack
+    container_name: 'broker'
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+    volumes: 
+      - ./mount/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./mount/rabbitmq/log/:/var/log/
+    deploy:
+      mode: global      
+    networks:
+      backend:
+
+  flower:
+    build: 
+      context: .
+      dockerfile: dockerfiles/flower/Dockerfile
+    entrypoint: celery
+    command: flower
+    container_name: 'monitor'
+    hostname: flower
+    image: koruja/flower:events-driven-stack
+    environment:
+      # https://github.com/sirodoht/opencult.com/issues/43
+      # Atenção para não colocar " nessas variáveis
+      - CELERY_BROKER_URL=amqp://owl:owl@rabbitmq
+      - FLOWER_PORT=5566
+    user: user  # Restrição de acesso (nobody não funciona no flower)
+    ports:
+      - 5566:5566
+    depends_on:
+      - rabbitmq 
+    deploy:
+      mode: global      
+    networks:
+      backend:
+
+  postman:
+    build: 
+      context: .
+      dockerfile: dockerfiles/postman/Dockerfile
+    image: koruja/postman:events-driven-stack
+    container_name: 'postman'
+    hostname: postman
+    entrypoint: python
+    command: ./postman.py  
+    environment:
+      - BROKER_URL=amqp://rabbitmq:5672
+      - CELERY_DEFAULT_QUEUE="default"
+      - CELERY_DEFAULT_EXCHANGE="default"
+      - CELERY_DEFAULT_EXCHANGE_TYPE="direct"
+      - CELERY_DEFAULT_ROUTING_KEY="default"
+    # user: nobody # Restrição de acesso 
+    ports:
+      - 8000:8000      
+    depends_on:
+      - rabbitmq 
+    deploy:
+      mode: global      
+    networks:
+      backend:
+
+  celery:
+    build: 
+      context: .
+      dockerfile: dockerfiles/celery/Dockerfile
+    container_name: 'worker'
+   #image: celery:services_domain
+   #hostname: A
+    image: koruja/celery:events-driven-stack
+    hostname: '{{.Node.ID}}'
+    environment:
+      - BROKER_URL=amqp://owl:owl@rabbitmq:5672
+     #- RESULT_BACKEND=redis://redis:6379/0
+      - C_FORCE_ROOT=true
+    #volumes: 
+    #  - ./mount/celery/log/:/home/celery/log/
+    depends_on:
+      - rabbitmq 
+    #deploy:
+    #  replicas: 3 # replicas worker que serão criados
+    networks:
+      backend:
+

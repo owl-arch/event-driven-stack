@@ -1,0 +1,8 @@
+FROM rabbitmq:3-management-alpine
+RUN apk update 
+
+# Setting para PYTHON
+ENV RABBITMQ_ERLANG_COOKIE "SWQOKODSQALRPCLNMEQG"
+ENV RABBITMQ_DEFAULT_USER  "owl"
+ENV RABBITMQ_DEFAULT_PASS  "owl"
+
