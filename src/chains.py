@@ -17,7 +17,7 @@ from celery import Celery
 from celery import chain
 
 app = Celery(
-  'chains', 
+  'chains', # Este arquivo com os processamentos
   broker="pyamqp://owl:owl@rabbitmq"
   # backend="amqp://owl:owl@rabbitmq",  
 )
@@ -45,7 +45,7 @@ def b(x,y):
   return x + y
 
 @app.task(
-  name='pipeline',     # Nome da task
+  #name='pipeline',     # Nome da task
   queue='chain_queue', # Fila de destino da task
   max_retry=4,         # Tentará no máximo 4 vezes
   retry_backoff=10,    # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.

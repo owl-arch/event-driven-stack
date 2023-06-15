@@ -7,9 +7,9 @@
 # Tratamento de Falhas no processamento do Celery
 #--
 
-# import os
-# import time
-# import random
+import os
+import time
+import random
 
 ## import config
 ## from celery.utils.log import get_task_logger
@@ -53,4 +53,20 @@ def hello(nome: str):
   return "hello {}".format(nome)
 
 
+@app.task(
+  name='Meu teste',       # Nome da task 
+  max_retry=3,            # Tentará no máximo 4 vezes
+  default_retry_delay=20, # Tempo entre as tentativas
+  #retry_backoff=10,       # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
+  #                        # 2 minutos (120 segundos) tentando processar
+ )
+def time_task(name):
+    helloworld = 'Test Time {}'.format(name)
+    try:
+        time.sleep(60)
+#    except:
+#        time.sleep(60)
+    except SoftTimeLimitExceeded:
+        lean_up_in_a_hurry()        
+    return helloworld 
   

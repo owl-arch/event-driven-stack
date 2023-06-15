@@ -25,6 +25,12 @@ fi
 #
 # -Q, --queues <queues>
 #
+# --time-limit 
+# Tempo máximo em segundos para uma Task ser executada
+#
+# --soft-time-limit
+# 
+#
 # -n, --hostname <hostname>
 # Set custom hostname (e.g., ‘w1@%%h’). Expands: %%h (hostname), %%n (name) and %%d, (domain).
 #
@@ -48,7 +54,9 @@ ${CELERY} -A tasks worker \
   --loglevel info \
   --logfile /home/celery/log/default.log \
   -Q celery  \
-  --hostname %h_default_queue \
+  --time-limit=60 \
+  --soft-time-limit=20 \
+  --hostname %h_DEFAULT \
   --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &
@@ -59,8 +67,8 @@ ${CELERY} -A tasks worker \
 ${CELERY} -A longs worker \
   --loglevel info \
   --logfile /home/celery/log/too_long.log \
-  -Q too_long_queue  \
-  --hostname %h_too_long_queue \
+  -Q long_queue  \
+  --hostname %h_LONG \
   --concurrency 4 \
   --pool prefork &
 #  #--autoscale=8,1 &
@@ -72,7 +80,7 @@ ${CELERY} -A chains worker \
   --loglevel info \
   --logfile /home/celery/log/chain.log \
   -Q chain_queue \
-  --hostname %h_chain_queue \
+  --hostname %h_CHAIN \
   --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &  

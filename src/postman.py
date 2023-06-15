@@ -70,6 +70,23 @@ def read_test():
     # retorno da função do Evento
     fib.delay(18)
     return {"celery": "postman"}
+
+
+##------------------------------------##
+##  Testes de Tempo de Processamento  ##
+##------------------------------------##
+
+@app_route.get("/test_time_task")
+def test_time_task():
+    time_task.delay("TASK")
+    return {"Test Time": "TASK"}
+
+@app_route.get("/test_time_long")
+def test_time_long():
+    time_long.delay("LONG")
+    return {"Test Time": "LONG"}    
+
+
 #
 # AINDA com ERRO !!!
 #
