@@ -25,9 +25,13 @@ fi
 #
 # -Q, --queues <queues>
 #
-# --time-limit 
+# --time-limit (default é 300s)
 # Tempo máximo em segundos para uma Task ser executada
-# BUG:  --soft-time-limit não funciona com --time-limit 
+# <BUG: https://github.com/celery/celery/issues/3618> 
+# O Celery 4.0 parece não respeitar a --time-limitopção de 
+# linha de comando se a --soft-time-limit também for especificado. 
+# No entanto, se eu omitir --soft-time-limit, o --time-limit funcionará
+# corretamente como um limite de tempo hard/rígido.
 # 
 #
 # -n, --hostname <hostname>
@@ -39,9 +43,10 @@ fi
 # --concurrency
 # Define estaticamento a quantidade de trabalhadores. 
 #
-# Ao usar, --autoscaleo número de processos é definido dinamicamente com valores máximos/mínimos
-# que permitem que o trabalhador seja dimensionado de acordo com a carga e 
-# ao usar --concurrency processos é definido estaticamente com um número fixo. 
+# Ao usar, --autoscaleo número de processos é definido dinamicamente
+# com valores máximos/mínimos que permitem que o trabalhador seja 
+# dimensionado de acordo com a carga e ao usar --concurrency processos 
+# é definido estaticamente com um número fixo. 
 # Portanto, usar esses dois juntos não faz sentido.
 #
 ####
@@ -58,9 +63,6 @@ ${CELERY} -A tasks worker \
   --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &
-
-# --soft-time-limit=20 \ # Não funciona
-  
 
 #-----------------------------##
 #  TOO LOG (demasiado longo)  ##

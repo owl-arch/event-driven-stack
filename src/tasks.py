@@ -54,6 +54,7 @@ def hello(nome: str):
 
 
 @app.task(
+  time_limit=61,
   name='Meu teste',       # Nome da task 
   max_retry=3,            # Tentará no máximo 4 vezes
   default_retry_delay=20, # Tempo entre as tentativas
