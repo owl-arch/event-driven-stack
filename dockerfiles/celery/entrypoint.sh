@@ -27,8 +27,7 @@ fi
 #
 # --time-limit 
 # Tempo máximo em segundos para uma Task ser executada
-#
-# --soft-time-limit
+# BUG:  --soft-time-limit não funciona com --time-limit 
 # 
 #
 # -n, --hostname <hostname>
@@ -55,11 +54,13 @@ ${CELERY} -A tasks worker \
   --logfile /home/celery/log/default.log \
   -Q celery  \
   --time-limit=60 \
-  --soft-time-limit=20 \
   --hostname %h_DEFAULT \
   --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &
+
+# --soft-time-limit=20 \ # Não funciona
+  
 
 #-----------------------------##
 #  TOO LOG (demasiado longo)  ##
