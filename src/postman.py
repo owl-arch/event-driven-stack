@@ -39,9 +39,9 @@ from longs  import * # Processamento demorados (too long)
 from chains import * # Processamento em cadeia (Chains)
 # from tasks import hello # teste
 
-app_events = FastAPI(title="Python, FastAPI, and Docker")
+app_route = FastAPI(title="Python, FastAPI, and Docker")
 
-@app_events.get("/config/", response_class=HTMLResponse)
+@app_route.get("/config/", response_class=HTMLResponse)
 async def show_config():
     html_content = """
     <html>
@@ -56,34 +56,35 @@ async def show_config():
     """
     return HTMLResponse(content=html_content, status_code=200)
 
-@app_events.get("/")
+@app_route.get("/")
 def read_root():
     return {"Microservice:": "Postman"}
 
 # Roteamento do Evento
-@app_events.get("/test")
-def read_test1():
+@app_route.get("/test")
+def read_test():
     # Ações (tasks) do Evento
     hello.delay("Marcos Antonio de Carvalho")
     # Ações em cadeia pipeline (chains) do Evento
     c.delay()
-
-
-
-    # retorno da tarefa e um Evento
-    # com controle de estado
-    arg1 = 18
-    process = fib.apply_async(args=(arg1,))   #fib.delay(18)
-    #state = process.state
-
-    return f"Thanks for your patience, your job {process.task_id} \
-             is being processed. Status {process.state}"
-
-    #return {"celery": "postman"}
-
+    # retorno da função do Evento
+    fib.delay(18)
+    return {"celery": "postman"}
+#
+# AINDA com ERRO !!!
+#
+## controle de estado
+#@app.route("/fib/arg1=<arg1>")
+#def fibonacci(arg1):
+#    # retorno da tarefa e um Evento
+#    # com controle de estado
+#    process = fib.apply_async(args=(arg1,)) #fib.delay(arg1)
+#    state = process.state
+#   #return f"Thanks for your patience, your job {process.task_id} \
+#    #         is being processed. Status {state}"
 
 # Roteamento e controle de Evento
-@app_events.get("/test2")
+@app_route.get("/test2")
 def read_test2():
     numTasks = 5
     tasks = []
@@ -106,7 +107,7 @@ def read_test2():
 # Ativa o serviço em produção
 # Isso aqui eu aprendi perguntando para o chatGPT ...  kkk
 if __name__ == '__main__':
-    uvicorn.run(app_events, host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run(app_route, host="0.0.0.0", port=8000, log_level="info")
 
 
 
