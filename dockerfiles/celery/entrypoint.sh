@@ -53,9 +53,9 @@ fi
 
 ###
 # Variaveis
-#   %h - Hostname
-#   %n - Name
-#   %I - Id da Thread do Pool
+#   %h - hostname
+#   %n - nodename
+#   %I - child process index
 #        /home/celery/log/default_%n%I.log - Observação: usar %I é 
 #        importante ao usar o pool de prefork, pois ter vários 
 #        processos compartilhando o mesmo arquivo de log levará 
