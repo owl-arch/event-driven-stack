@@ -51,14 +51,27 @@ fi
 #
 ####
 
+###
+# Variaveis
+#   %h - Hostname
+#   %n - Name
+#   %I - Id da Thread do Pool
+#        /home/celery/log/default_%n%I.log - Observação: usar %I é 
+#        importante ao usar o pool de prefork, pois ter vários 
+#        processos compartilhando o mesmo arquivo de log levará 
+#        a condições de concorrência para gravação de log.
+##
+
 ##--------------------##
 ##  COMMON (default)  ##
 ##--------------------##
 ${CELERY} -A tasks worker \
   --loglevel info \
-  --logfile /home/celery/log/default.log \
+  --logfile /home/celery/log/default_%n%I.log \
+  --pidfile=/home/celery/run/default_%n.pid \
   -Q celery  \
   --time-limit=60 \
+  --soft-time-limit=10 \
   --hostname %h_DEFAULT \
   --concurrency 2 \
   --pool prefork &
@@ -69,7 +82,8 @@ ${CELERY} -A tasks worker \
 #-----------------------------##
 ${CELERY} -A longs worker \
   --loglevel info \
-  --logfile /home/celery/log/too_long.log \
+  --logfile /home/celery/log/long_%n%I.log \
+  --pidfile=/home/celery/run/long_%n.pid \
   -Q long_queue  \
   --hostname %h_LONG \
   --concurrency 4 \
@@ -81,7 +95,8 @@ ${CELERY} -A longs worker \
 #---------------------------##
 ${CELERY} -A chains worker \
   --loglevel info \
-  --logfile /home/celery/log/chain.log \
+  --logfile /home/celery/log/chain_%n%I.log \
+  --pidfile=/home/celery/run/chain_%n.pid \
   -Q chain_queue \
   --hostname %h_CHAIN \
   --concurrency 2 \

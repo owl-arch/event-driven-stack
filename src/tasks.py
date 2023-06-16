@@ -15,6 +15,7 @@ import random
 ## from celery.utils.log import get_task_logger
 import celery_config
 from celery import Celery
+from celery.exceptions import SoftTimeLimitExceeded
 
 ## logger = get_task_logger(__name__)
 app = Celery(
@@ -54,20 +55,35 @@ def hello(nome: str):
 
 
 @app.task(
-  time_limit=61,
-  name='Meu teste',       # Nome da task 
+  time_limit=60,
+  soft_time_limit=50, # diferente de zero
+  name='Test time TASK',       # Nome da task 
   max_retry=3,            # Tentará no máximo 4 vezes
-  default_retry_delay=20, # Tempo entre as tentativas
+  #default_retry_delay=20, # Tempo entre as tentativas
   #retry_backoff=10,       # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
   #                        # 2 minutos (120 segundos) tentando processar
+  # Auto retry caso algum na tupla aconteça
+  # autoretry_for(TypeError,Exception),
+  #autoretry_for(SoftTimeLimitExceeded,),  
  )
 def time_task(name):
-    helloworld = 'Test Time {}'.format(name)
+    #helloworld = 'Test Time {}'.format(name)
     try:
-        time.sleep(60)
-#    except:
-#        time.sleep(60)
+        helloworld = 'Test Time {} try'.format(name)
+        time.sleep(30)
+    #except SoftTimeLimitExceeded:
+    #    clean_up_in_a_hurry()        
+    #
     except SoftTimeLimitExceeded:
-        lean_up_in_a_hurry()        
+        helloworld = 'Test Time {} except'.format(name)
+        #time.sleep(1)      
+
+ #   except:
+ #       # A exceção vai rador com o tempo limite
+ #       # do time_limit menos 10s (EU não sei porque!) 
+ #       helloworld = 'Test Time {} except'.format(name)
+ #       #time.sleep(61)
+
+
     return helloworld 
   

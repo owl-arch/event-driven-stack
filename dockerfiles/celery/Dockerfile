@@ -35,8 +35,9 @@ USER celery
 # Diretório do usuário
 WORKDIR /home/celery
 
-# Cria diretório de Logs
-RUN mkdir log 
+# Cria diretório de LOGs e PIDs
+RUN mkdir log; \
+    mkdir run; 
 
 ##---------------------------##
 ##  2a fase - REQUERIMENTOS  ##

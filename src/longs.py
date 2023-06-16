@@ -38,17 +38,19 @@ def fib(n):
   return fib(n-1) + fib(n-2)
 
 @app.task(
-  name='Meu teste',   # Nome da task 
-  queue='long_queue', # Fila de destino da task
- # max_retry=4,       # Tentará no máximo 4 vezes
- # retry_backoff=10,  # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
-                      # 2 minutos (120 segundos) tentando processar
+  name='Test time LONG', # Nome da task 
+  queue='long_queue',    # Fila de destino da task
+ # max_retry=4,          # Tentará no máximo 4 vezes
+ # retry_backoff=10,     # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
+                         # 2 minutos (120 segundos) tentando processar
  )
 def time_long(name):
-    helloworld = 'Test Time {}'.format(name)
+    #helloworld = 'Test Time {}'.format(name)
     try:
+        helloworld = 'Test Time {} try'.format(name)
         time.sleep(60)
     except:
+        helloworld = 'Test Time {} except'.format(name)
         time.sleep(60)
     return helloworld 
 
