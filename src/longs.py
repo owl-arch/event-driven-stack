@@ -20,7 +20,8 @@ import random
 from celery import Celery
 
 # Criei um pacote com __init__.py
-from event_databus import app
+from databus import app
+#from module.databus import app
 
 @app.task(
   queue='long_queue', # Fila de destino da task

@@ -21,7 +21,9 @@ from celery.exceptions import SoftTimeLimitExceeded
 ## logger = get_task_logger(__name__)
 
 # Criei um pacote com __init__.py
-from event_databus import app
+#import mymod.databus as teste
+#app = teste.app
+from databus import app
 
 
 #task_routes = ([

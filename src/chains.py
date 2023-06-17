@@ -18,7 +18,8 @@ from celery import Celery
 from celery import chain
 
 # Criei um pacote com __init__.py
-from event_databus import app
+from databus import app
+#from module.databus import app
 
 ##---------------##
 ##  CHAIN TASKS  ##

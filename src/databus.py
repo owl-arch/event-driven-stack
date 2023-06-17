@@ -39,7 +39,7 @@ app_xxxx= Celery(
 
 # Inicialize o objeto Celery
 app = Celery(
-  'owl',
+  'owl-databus',
    broker="pyamqp://owl:owl@rabbitmq",
    #backend="redis://redis:6379",
 )
