@@ -13,14 +13,12 @@
 
 ## import celery_config
 ## from celery.utils.log import get_task_logger
+
 from celery import Celery
 from celery import chain
 
-app = Celery(
-  'chains', # Este arquivo com os processamentos
-  broker="pyamqp://owl:owl@rabbitmq"
-  # backend="amqp://owl:owl@rabbitmq",  
-)
+# Criei um pacote com __init__.py
+from event_databus import app
 
 ##---------------##
 ##  CHAIN TASKS  ##

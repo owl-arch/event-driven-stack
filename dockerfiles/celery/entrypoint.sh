@@ -52,7 +52,7 @@ fi
 ####
 
 ###
-# Variaveis
+# Variáveis
 #   %h - hostname
 #   %n - nodename
 #   %I - child process index
@@ -66,13 +66,13 @@ fi
 ##  COMMON (default)  ##
 ##--------------------##
 ${CELERY} -A tasks worker \
+  --hostname %h_DEFAULT \
   --loglevel info \
   --logfile /home/celery/log/default_%n%I.log \
-  --pidfile=/home/celery/run/default_%n.pid \
+  --pidfile /home/celery/run/default_%n.pid \
   -Q celery  \
   --time-limit=60 \
   --soft-time-limit=10 \
-  --hostname %h_DEFAULT \
   --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &
@@ -81,11 +81,11 @@ ${CELERY} -A tasks worker \
 #  TOO LOG (demasiado longo)  ##
 #-----------------------------##
 ${CELERY} -A longs worker \
+  --hostname %h_LONG \
   --loglevel info \
   --logfile /home/celery/log/long_%n%I.log \
-  --pidfile=/home/celery/run/long_%n.pid \
+  --pidfile /home/celery/run/long_%n.pid \
   -Q long_queue  \
-  --hostname %h_LONG \
   --concurrency 4 \
   --pool prefork &
 #  #--autoscale=8,1 &
@@ -94,14 +94,30 @@ ${CELERY} -A longs worker \
 #  CHAIN (Cadeia/Pipeline)  ##
 #---------------------------##
 ${CELERY} -A chains worker \
+  --hostname %h_CHAIN \
   --loglevel info \
   --logfile /home/celery/log/chain_%n%I.log \
-  --pidfile=/home/celery/run/chain_%n.pid \
+  --pidfile /home/celery/run/chain_%n.pid \
   -Q chain_queue \
-  --hostname %h_CHAIN \
   --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &  
+
+#----------------##
+#  BEAT (Batch)  ##
+#----------------##
+#${CELERY} -A beat beat \
+#  --hostname %h_BEAT \
+#  --loglevel info \
+#  --logfile /home/celery/log/beat_%n%I.log \
+#  --pidfile /home/celery/run/beat_%n.pid \
+#  -Q beat_queue \
+#  --autoscale=10,2 \
+#  --pool prefork &
+#  #--autoscale=8,1 &
+#  #--concurrency 2 \  
+
+
 
 echo "Press [CTRL+C] to stop.."
 while : 

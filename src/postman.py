@@ -12,19 +12,11 @@
 # realizar a medida que vão chegando, de modo a não comprometer a 
 # performance do Microsserviço corrente de atendimento direto ao usuário.
 
-
+import os
 import time
 import random
 
 from celery import Celery
-
-app = Celery(
-  'postman',
-   broker="pyamqp://owl:owl@rabbitmq",
-  # backend="amqp://owl:owl@rabbitmq",
-)
-
-#from kombu import Queue
 
 # Servidor ASGI (WebServer)
 import uvicorn
@@ -70,6 +62,72 @@ def read_test():
     # retorno da função do Evento
     fib.delay(18)
     return {"celery": "postman"}
+
+##--------------------------------------------------##
+##  Teste de Retorno de Resultado do Processamento  ##
+##--------------------------------------------------##
+
+from celery.result import AsyncResult
+from kombu.exceptions import TimeoutError
+
+from celery import uuid
+
+@app_route.get("/test_result")
+def test_result():
+
+    # Execute o cálculo assíncrono da série de Fibonacci
+    # process = fibonacci.delay(12)
+    #process = fibonacci.apply_async((12, ), 
+    #                                retry=True, 
+    #                                retry_policy={
+    #                                             'max_retries': 3,
+    #                                             'retry_errors': (TimeoutError, ),
+    #                                             })
+    result = fibonacci.apply_async((8, ),)
+
+    # grab the AsyncResult 
+   # result = celery.result.AsyncResult(task_id)
+
+    # print the task id
+    #print result.task_id
+    #09dad9cf-c9fa-4aee-933f-ff54dae39bdf
+
+    # print the AsyncResult's status
+    #print result.status
+    #SUCCESS
+
+    # print the result returned 
+    #print result.result
+    #4
+    
+    myid = result.task_id
+    #mystatus = result.status
+    #myres = result.result
+    return f"UUID:: {myid}"
+
+    # grab the AsyncResult 
+    #res = celery.result.AsyncResult(task_id)
+ 
+
+    
+
+
+    # Aguarde o resultado da tarefa e imprima-o
+    #fibonacci_sequence = process.get()
+    
+    #fibonacci_sequence = AsyncResult(process)
+   
+    # fibonacci_sequence.ready()
+    # fibonacci_sequence.state()
+
+    
+    #print("Série de Fibonacci:")
+    #print(fibonacci_sequence)
+
+    #return "UUID: {}".format(fibonacci_sequence)
+    #return f"UUID:: {fibonacci_sequence}"
+    
+
 
 
 ##------------------------------------##

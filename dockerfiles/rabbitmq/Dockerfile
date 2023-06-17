@@ -1,5 +1,6 @@
 FROM rabbitmq:3-management-alpine
-RUN apk update 
+
+#RUN apk update 
 
 # Setting para PYTHON
 ENV RABBITMQ_ERLANG_COOKIE "SWQOKODSQALRPCLNMEQG"

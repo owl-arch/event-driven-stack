@@ -26,8 +26,8 @@ services:
     build: 
       context: .
       dockerfile: dockerfiles/rabbitmq/Dockerfile
-    image: koruja/rabbitmq:events-driven-stack
-    container_name: 'broker'
+    image: owl/rabbitmq:events-driven-stack
+    container_name: 'owl-databus-message-broker'
     hostname: rabbitmq
     ports:
       - "5672:5672"
@@ -41,15 +41,33 @@ services:
     networks:
       backend:
 
+  redis:
+    build: 
+      context: .
+      dockerfile: dockerfiles/redis/Dockerfile
+    #image: redis:latest
+    container_name: 'owl-databus-result-backend'
+    hostname: redis
+    image: owl/redis:events-driven-stack
+    #environment:
+    #  - REDIS_PASSWORD=owl
+    volumes:
+      - ./redis.conf:/redis.conf:ro
+    ports:
+      - '6379:6379'
+    command: [ "redis-server", "/redis.conf" ]
+    networks:
+      backend:
+
   flower:
     build: 
       context: .
       dockerfile: dockerfiles/flower/Dockerfile
     entrypoint: celery
     command: flower
-    container_name: 'monitor'
+    container_name: 'owl-databus-monitor-online'
     hostname: flower
-    image: koruja/flower:events-driven-stack
+    image: owl/flower:events-driven-stack
     environment:
       # https://github.com/sirodoht/opencult.com/issues/43
       # Atenção para não colocar " nessas variáveis
@@ -69,8 +87,8 @@ services:
     build: 
       context: .
       dockerfile: dockerfiles/postman/Dockerfile
-    image: koruja/postman:events-driven-stack
-    container_name: 'postman'
+    image: owl/postman:events-driven-stack
+    container_name: 'owl-event-producer-postman'
     hostname: postman
     entrypoint: python
     command: ./postman.py  
@@ -94,14 +112,16 @@ services:
     build: 
       context: .
       dockerfile: dockerfiles/celery/Dockerfile
-    container_name: 'worker'
+    container_name: 'owl-event-consumer-worker'
    #image: celery:services_domain
    #hostname: A
-    image: koruja/celery:events-driven-stack
+    image: owl/celery:events-driven-stack
     hostname: '{{.Node.ID}}'
+    env_file: dockerfiles/celery/.env
     environment:
       - BROKER_URL=amqp://owl:owl@rabbitmq:5672
-     #- RESULT_BACKEND=redis://redis:6379/0
+      #- RESULT_BACKEND=redis://redis:6379
+      #- CELERY_RESULT_BACKEND=redis://redis:6379/0
       - C_FORCE_ROOT=true
     #volumes: 
     #  - ./mount/celery/log/:/home/celery/log/

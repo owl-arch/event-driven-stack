@@ -19,11 +19,8 @@ import random
 ## from celery.utils.log import get_task_logger
 from celery import Celery
 
-app = Celery(
-  'longs',  # Este arquivo com os processamentos
-  broker="pyamqp://owl:owl@rabbitmq"
-  # backend="amqp://owl:owl@rabbitmq",  
-)
+# Criei um pacote com __init__.py
+from event_databus import app
 
 @app.task(
   queue='long_queue', # Fila de destino da task

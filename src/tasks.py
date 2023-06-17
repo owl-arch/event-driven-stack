@@ -14,21 +14,22 @@ import random
 ## import config
 ## from celery.utils.log import get_task_logger
 import celery_config
+
 from celery import Celery
 from celery.exceptions import SoftTimeLimitExceeded
 
 ## logger = get_task_logger(__name__)
-app = Celery(
-  'tasks',
-   broker="pyamqp://owl:owl@rabbitmq",
-  # backend="amqp://owl:owl@rabbitmq",
-)
+
+# Criei um pacote com __init__.py
+from event_databus import app
+
 
 #task_routes = ([
 #    ('vamos.tasks.*', {'queue': 'too_long_queue'}),
 ##    ('web.tasks.*', {'queue': 'web'}),
 #    (re.compile(r'(video|image)\.tasks\..*'), {'queue': 'media'}),
 #],)
+
 
 ##----------------##
 ##  SIMPLE TASKS  ##
@@ -67,23 +68,28 @@ def hello(nome: str):
   #autoretry_for(SoftTimeLimitExceeded,),  
  )
 def time_task(name):
-    #helloworld = 'Test Time {}'.format(name)
     try:
         helloworld = 'Test Time {} try'.format(name)
-        time.sleep(30)
-    #except SoftTimeLimitExceeded:
-    #    clean_up_in_a_hurry()        
-    #
+        time.sleep(50)
     except SoftTimeLimitExceeded:
         helloworld = 'Test Time {} except'.format(name)
         #time.sleep(1)      
-
- #   except:
- #       # A exceção vai rador com o tempo limite
- #       # do time_limit menos 10s (EU não sei porque!) 
- #       helloworld = 'Test Time {} except'.format(name)
- #       #time.sleep(61)
-
-
     return helloworld 
   
+ 
+# Esta função foi criada no ChatGPT
+#
+# Defina a função para calcular a série de Fibonacci
+@app.task
+def fibonacci(n):
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+    else:
+        fib_sequence = [0, 1]
+        while len(fib_sequence) < n:
+            fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])
+        return fib_sequence
