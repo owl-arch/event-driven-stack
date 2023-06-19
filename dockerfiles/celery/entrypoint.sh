@@ -62,6 +62,55 @@ fi
 #        a condições de concorrência para gravação de log.
 ##
 
+##
+# Excelente Artigo sobre o celery
+# Por que o Celery não está executando minha tarefa?
+# https://www.lorenzogil.com/blog/2020/03/01/celery-tasks/
+##
+#------------------------- Calclulos para dimensionamento
+#
+#   Processos: 
+#     {--concurrency} processos simultaneos + 1 mestre
+#            3        processos simultaneos + 1 mestre
+#
+#   pré-busca = prefetch_multiplier (default=4)
+# 
+# Celery Mestre solicitará ao Broker as tarefas simultaneas:
+#   {--concurrency} * {prefetch_multiplier}
+#          3        *          4             
+#    blocos de 12 tarefas para processamento simultaneas por vez
+## 
+# RECOMENDAÇÃO:
+#   reduzir o valor do parâmetro de pré-busca {prefetch_multiplier}
+#   se seus produtores não gera muitas tarefas. Desta forma as tarefas 
+#   são distribuídas de forma mais uniforme pelos seus servidores.
+##
+
+##
+# -O fair
+#   O Mestre busca tarefas da fila e decidir como distribuir a tarefa
+#   entre seus processos filhos. Por padrão, o Celery usa uma política
+#   chamada {fast}, mas pode ser configurado para usar uma política 
+#   diferente chamada {fair}.
+#
+#   fast - atribui via 'pipe' as tarefas ao processo filho em ordem:
+#          filho 1, depois ao filho 2, depois ao filho 3 e
+#          depois de volta ao filho 1 e assim por diante.
+#          RECOMENDAÇÃO: No Linux, um tamanho padrão de pipe regular é de
+#                        64 KB e recomendamos  ser configurado para 1 MB.
+#          DICA: Essa política é boa quando há muitas tarefas pequenas
+#                em sua carga de trabalho.
+#
+#   fair - leva em consideração o quão ocupado cada processo filho está 
+#          e escolhe o filho com menos tarefas naquele momento.
+#          DICA: Essa política é boa quando há grandes tarefas em sua 
+#                carga de trabalho.
+#
+#   OBSERVAÇÂO IMPORTANTE -  Celery mudou a política padrão na versão 4.0 
+#                            e agora eles estão usando fair como padrão. 
+##
+
+
 ##--------------------##
 ##  COMMON (default)  ##
 ##--------------------##
@@ -74,7 +123,7 @@ ${CELERY} -A tasks worker \
   -O fair \
   --time-limit=60 \
   --soft-time-limit=10 \
-  --concurrency 3 \
+  --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &
 
@@ -88,7 +137,7 @@ ${CELERY} -A longs worker \
   --pidfile /home/celery/run/long_%n.pid \
   --queues long_queue  \
   -O fair \
-  --concurrency 3 \
+  --concurrency 2 \
   --pool prefork &
 #  #--autoscale=8,1 &
 
@@ -102,7 +151,7 @@ ${CELERY} -A chains worker \
   --pidfile /home/celery/run/chain_%n.pid \
   --queues chain_queue \
   -O fair \
-  --concurrency 3 \
+  --concurrency 2 \
   --pool prefork &
   #--autoscale=8,1 &  
 
