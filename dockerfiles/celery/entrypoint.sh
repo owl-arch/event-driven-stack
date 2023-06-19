@@ -70,10 +70,11 @@ ${CELERY} -A tasks worker \
   --loglevel info \
   --logfile /home/celery/log/default_%n%I.log \
   --pidfile /home/celery/run/default_%n.pid \
-  -Q celery  \
+  --queues celery  \
+  -O fair \
   --time-limit=60 \
   --soft-time-limit=10 \
-  --concurrency 2 \
+  --concurrency 3 \
   --pool prefork &
   #--autoscale=8,1 &
 
@@ -85,8 +86,9 @@ ${CELERY} -A longs worker \
   --loglevel info \
   --logfile /home/celery/log/long_%n%I.log \
   --pidfile /home/celery/run/long_%n.pid \
-  -Q long_queue  \
-  --concurrency 4 \
+  --queues long_queue  \
+  -O fair \
+  --concurrency 3 \
   --pool prefork &
 #  #--autoscale=8,1 &
 
@@ -98,8 +100,9 @@ ${CELERY} -A chains worker \
   --loglevel info \
   --logfile /home/celery/log/chain_%n%I.log \
   --pidfile /home/celery/run/chain_%n.pid \
-  -Q chain_queue \
-  --concurrency 2 \
+  --queues chain_queue \
+  -O fair \
+  --concurrency 3 \
   --pool prefork &
   #--autoscale=8,1 &  
 
@@ -111,7 +114,7 @@ ${CELERY} -A chains worker \
 #  --loglevel info \
 #  --logfile /home/celery/log/beat_%n%I.log \
 #  --pidfile /home/celery/run/beat_%n.pid \
-#  -Q beat_queue \
+#  --queues beat_queue \
 #  --autoscale=10,2 \
 #  --pool prefork &
 #  #--autoscale=8,1 &

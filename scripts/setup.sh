@@ -3,8 +3,8 @@
 # . ./setup
 
 # scripts
-alias cls="cd /root/scripts; ./cls.sh; cd -; echo"
-alias test="cd /root/scripts; ./test.sh; cd -; echo"
+alias  cls="cd ~/event-driven-stack/scripts; ./cls.sh; cd -; echo"
+alias test="cd ~/event-driven-stack/scripts; ./test.sh; cd -; echo"
 
 # Listers
 alias lsi="figlet 'Images'    | lolcat; docker image ls     ; echo"
@@ -24,8 +24,9 @@ alias wls="figlet 'worker Lister' | lolcat; docker exec -it worker sh -c 'ls -l 
 alias wll="figlet 'worker Lister' | lolcat; docker exec -it worker sh -c 'ls -la $@'"
 
 # Shell do Consumer(Worker) e do Producer(postman)
-alias shc="figlet 'worker'  | lolcat; docker exec -it owl-event-consumer-worker  sh -c '/bin/sh'"
-alias shp="figlet 'postman' | lolcat; docker exec -it owl-event-producer-postman sh -c '/bin/sh'"
+alias  server="figlet 'Server' | lolcat; docker exec -it owl-event-producer-postman sh -c '/bin/sh'"
+alias  worker="figlet 'Worker' | lolcat; docker exec -it owl-event-consumer-worker  sh -c '/bin/sh'"
+
 
 
 # docker build -t celery .
