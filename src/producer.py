@@ -62,11 +62,11 @@ while True:
         print(f"Task Instance -->  {async_result.id = }")
 
         run = AsyncResult(async_result)
-        print(f"Task State ----->  {run.state = }")
+        print(f"Task State ----->  {run.state       = }")
         
         # Recupera a mensagem de retorno da Tarefa/Task
         result = async_result.get(TIMEOUT)
-        print(f"Task Result ---->  async_result.get(TIMEOUT) = {result}")
+        print(f"Task Result ---->  async_result.get = {result}")
         #print(f"Task Ready ----->  {result.ready = }")
         
         run = AsyncResult(async_result)
