@@ -58,10 +58,16 @@ def read_test():
     # Ações (tasks) do Evento
     hello.delay("Marcos Antonio de Carvalho")
     # Ações em cadeia pipeline (chains) do Evento
-    c.delay()
+ ##   c.delay()
     # retorno da função do Evento
     fib.delay(18)
     return {"celery": "postman"}
+
+# Roteamento do Evento
+@app_route.get("/cron")
+def periodic_tasks():
+  setup_periodic_tasks.delay()
+  return {"celery": "setup_periodic_tasks"}  
 
 ##--------------------------------------------------##
 ##  Teste de Retorno de Resultado do Processamento  ##
@@ -109,9 +115,6 @@ def test_result():
     #res = celery.result.AsyncResult(task_id)
  
 
-    
-
-
     # Aguarde o resultado da tarefa e imprima-o
     #fibonacci_sequence = process.get()
     
@@ -127,8 +130,6 @@ def test_result():
     #return "UUID: {}".format(fibonacci_sequence)
     #return f"UUID:: {fibonacci_sequence}"
     
-
-
 
 ##------------------------------------##
 ##  Testes de Tempo de Processamento  ##
@@ -177,7 +178,6 @@ def read_test2():
 
     #print('Application ended')
     #return {"Received result:" : result}
-
 
 # Ativa o serviço em produção
 # Isso aqui eu aprendi perguntando para o chatGPT ...  kkk

@@ -120,8 +120,7 @@ services:
     env_file: dockerfiles/celery/.env
     environment:
       - BROKER_URL=amqp://owl:owl@rabbitmq:5672
-      #- RESULT_BACKEND=redis://redis:6379
-      #- CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - RESULT_BACKEND=rpc://
       - C_FORCE_ROOT=true
     #volumes: 
     #  - ./mount/celery/log/:/home/celery/log/

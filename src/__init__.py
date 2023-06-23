@@ -1,2 +1,1 @@
-
-__all__ = ['mymod','databus']
+__all__ = ['worker','databus']

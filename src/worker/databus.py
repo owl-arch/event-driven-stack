@@ -39,9 +39,10 @@ app_xxxx= Celery(
 
 # Inicialize o objeto Celery
 app = Celery(
-  'owl-databus',
-   broker="pyamqp://owl:owl@rabbitmq",
-   #backend="redis://redis:6379",
+  'owl',
+   broker="amqp://owl:owl@rabbitmq",
+   backend="rpc://",
+   include=["owl.tasks",],
 )
 
 

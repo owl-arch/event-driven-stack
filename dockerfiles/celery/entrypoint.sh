@@ -53,17 +53,21 @@ fi
 
 ###
 # Variáveis
-#   %h - hostname
-#   %n - nodename
-#   %I - child process index
-#        /home/celery/log/default_%n%I.log - Observação: usar %I é 
-#        importante ao usar o pool de prefork, pois ter vários 
-#        processos compartilhando o mesmo arquivo de log levará 
-#        a condições de concorrência para gravação de log.
+#
+#   %p: Nome completo do node
+#   %h: Hostname, incluindo nome de domínio
+#   %n: Somente nome do host (nodename)
+#   %d: apenas nome de domínio
+#
+#   %i: Índice de processo do pool Prefork ou 0 se MainProcess
+#   %I: índice de processo do pool de pré-fork com separador
+#   DICA - Usar %I ou %i é importante ao usar o pool de prefork, pois
+#          ter vários processos compartilhando o mesmo arquivo de log
+#          levará a condições de concorrência para gravação de log.
 ##
 
 ##
-# Excelente Artigo sobre o celery
+# Excelente Artigo sobre tunning no celery 
 # Por que o Celery não está executando minha tarefa?
 # https://www.lorenzogil.com/blog/2020/03/01/celery-tasks/
 ##
@@ -76,13 +80,13 @@ fi
 #   pré-busca = prefetch_multiplier (default=4)
 # 
 # Celery Mestre solicitará ao Broker as tarefas simultaneas:
-#   {--concurrency} * {prefetch_multiplier}
+#   {--concurrency} * {--prefetch-multiplier}
 #          3        *          4             
 #    blocos de 12 tarefas para processamento simultaneas por vez
 ## 
 # RECOMENDAÇÃO:
 #   reduzir o valor do parâmetro de pré-busca {prefetch_multiplier}
-#   se seus produtores não gera muitas tarefas. Desta forma as tarefas 
+#   se seus produtores NÃO gera muitas tarefas. Desta forma as tarefas 
 #   são distribuídas de forma mais uniforme pelos seus servidores.
 ##
 
@@ -110,66 +114,105 @@ fi
 #                            e agora eles estão usando fair como padrão. 
 ##
 
+##
+#  RECOMENDAÇÃO: 
+#    Torne nossas tarefas menores dividindo a tarefa grande e gorda em tarefas
+#     menores. Um exemplo antipadrão muito comum no celeryo é ter um loop ou for 
+#     que itera sobre vários elementos e faz o mesmo processamento em cada item. 
+#     Isso é fácil de dividir por ter uma tarefa pai que apenas gera tarefas 
+#     filhas, onde cada tarefa filha executa o trabalho para um item específico.
+#
+##
+#  RECOMENDAÇÃO: 
+#    Configure o Celery para usar uma política adequada (fair ou fast) para
+#    distribuição das tarefas.. Dessa forma, podemos evitar o problema de 
+#    ter uma tarefa esperando por muito tempo enquanto há recursos de computação
+#    disponíveis ociosos.
+#
+##
+#  RECOMENDAÇÃO: 
+#    Trabalhe com várias filas e envie tarefas para cada uma dessas filas
+#    com base em seu tamanho. Por exemplo, você pode ter uma fila de tarefas
+#    lentas e uma fila de tarefas rápidas. Dessa forma, suas tarefas lentas
+#    não bloquearão suas tarefas rápidas.
+#
+##
+
+
+##
+#  https://docs.celeryq.dev/en/4.0/whatsnew-4.0.html#ofair-is-now-the-default-scheduling-strategy
+##
+#
+# celery worker TRABALHADOR
+#	celery beat   BATCH
+# celery multi
+##
 
 ##--------------------##
 ##  COMMON (default)  ##
 ##--------------------##
-${CELERY} -A tasks worker \
-  --hostname %h_DEFAULT \
+${CELERY} \
+  --app tasks worker \
+  --hostname default@%h \
   --loglevel info \
-  --logfile /home/celery/log/default_%n%I.log \
-  --pidfile /home/celery/run/default_%n.pid \
+  --logfile /home/celery/log/%n_%i.log \
   --queues celery  \
-  -O fair \
-  --time-limit=60 \
-  --soft-time-limit=10 \
+  --time-limit 15 \
   --concurrency 2 \
+  --prefetch-multiplier 6 \
   --pool prefork &
+  #
+  # --pidfile /home/celery/run/%n.pid \
+  #
   #--autoscale=8,1 &
-
+  #--soft-time-limit 10 
+  # -O fast \
+  # -Ofast \
+  #--logfile /home/celery/log/default_%n%I.log \
+  #--pidfile /home/celery/run/default_%n.pid \
+  #--logfile /home/celery/log/%n_%i.log \
+  #--pidfile /home/celery/run/%n.pid \  
+  
 #-----------------------------##
 #  TOO LOG (demasiado longo)  ##
 #-----------------------------##
 ${CELERY} -A longs worker \
-  --hostname %h_LONG \
+  --hostname long@%h \
   --loglevel info \
-  --logfile /home/celery/log/long_%n%I.log \
-  --pidfile /home/celery/run/long_%n.pid \
+  --logfile /home/celery/log/%n_%i.log \
   --queues long_queue  \
-  -O fair \
+  -Ofair \
   --concurrency 2 \
+  --prefetch-multiplier 1 \
   --pool prefork &
-#  #--autoscale=8,1 &
+  #--autoscale=8,1 &
+
 
 #---------------------------##
 #  CHAIN (Cadeia/Pipeline)  ##
 #---------------------------##
-${CELERY} -A chains worker \
-  --hostname %h_CHAIN \
-  --loglevel info \
-  --logfile /home/celery/log/chain_%n%I.log \
-  --pidfile /home/celery/run/chain_%n.pid \
-  --queues chain_queue \
-  -O fair \
-  --concurrency 2 \
-  --pool prefork &
-  #--autoscale=8,1 &  
+#${CELERY} -A chains worker \
+#  --hostname chain@%h \
+#  --loglevel info \
+#  --logfile /home/celery/log/chain_%n%I.log \
+#  --pidfile /home/celery/run/chain_%n.pid \
+#  --queues chain_queue \
+#  --concurrency 2 \
+#  --pool prefork &
+#  #--autoscale=8,1 &  
 
 #----------------##
 #  BEAT (Batch)  ##
 #----------------##
-#${CELERY} -A beat beat \
-#  --hostname %h_BEAT \
+#${CELERY} -A beat worker -B \
+#  --hostname schedule@%h \
 #  --loglevel info \
-#  --logfile /home/celery/log/beat_%n%I.log \
-#  --pidfile /home/celery/run/beat_%n.pid \
-#  --queues beat_queue \
-#  --autoscale=10,2 \
-#  --pool prefork &
-#  #--autoscale=8,1 &
-#  #--concurrency 2 \  
-
-
+#  --logfile /home/celery/log/%n_%i.log \
+#  -s /home/celery/run/celerybeat-schedule \
+#  --queues schedule_queue \
+#  --concurrency 2 \
+#  --pool prefork &  
+#${CELERY} -A beat beat -q  -s /home/celery/log/celerybeat-schedule &  
 
 echo "Press [CTRL+C] to stop.."
 while : 

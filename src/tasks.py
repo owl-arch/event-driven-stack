@@ -13,16 +13,16 @@ import random
 
 ## import config
 ## from celery.utils.log import get_task_logger
-import celery_config
+#import celery_settings
 
 from celery import Celery
+
 from celery.exceptions import SoftTimeLimitExceeded
 
 ## logger = get_task_logger(__name__)
 
 # Criei um pacote com __init__.py
 #import mymod.databus as teste
-#app = teste.app
 from databus import app
 
 
@@ -36,6 +36,19 @@ from databus import app
 ##----------------##
 ##  SIMPLE TASKS  ##
 ##----------------##
+
+from celery import shared_task
+
+@shared_task(bind=True)
+def x_task(self, sleep_time=0):
+    time.sleep(sleep_time)
+    return "this is x_task %s sec." % sleep_time
+
+@app.task(bind=True)
+def y_task(self, sleep_time=0):
+    time.sleep(sleep_time)
+    return "this is y_task %s sec." % sleep_time    
+
 
 @app.task(
   name='add_Task',   # Nome da task
