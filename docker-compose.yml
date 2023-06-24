@@ -41,24 +41,6 @@ services:
     networks:
       backend:
 
-  redis:
-    build: 
-      context: .
-      dockerfile: dockerfiles/redis/Dockerfile
-    #image: redis:latest
-    container_name: 'owl-databus-result-backend'
-    hostname: redis
-    image: owl/redis:events-driven-stack
-    #environment:
-    #  - REDIS_PASSWORD=owl
-    volumes:
-      - ./redis.conf:/redis.conf:ro
-    ports:
-      - '6379:6379'
-    command: [ "redis-server", "/redis.conf" ]
-    networks:
-      backend:
-
   flower:
     build: 
       context: .

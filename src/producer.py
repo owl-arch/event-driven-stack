@@ -3,16 +3,16 @@
 from celery import Celery
 import time
 
-TIMEOUT = 5
+################### TIMEOUT = 5
 
-#celery_app = Celery(
+#app = Celery(
 #    broker="amqp://owl:owl@rabbitmq",
 #    backend="rpc://",
 #)
 
 
 # Inicialize o objeto Celery
-celery_app = Celery(
+app = Celery(
   'owl',
    broker="amqp://owl:owl@rabbitmq",
    backend="rpc://",
@@ -20,77 +20,72 @@ celery_app = Celery(
 )
 
 # Configuração de timezone
-celery_app.conf.timezone = 'UTC'
-print(f"Celery --> {celery_app.conf.timezone = }")
+app.conf.timezone = 'UTC'
+print(f"Celery --> {app.conf.timezone = }")
 
 #
-task_ignore_result = False
+#task_ignore_result = False
+#task_ignore_result = True
 
 #
-task_track_started = True
+task_track_started = False
 print(f"Celery --> {task_track_started = }")
 
 #
-result_persistent=True
+#result_persistent=True
 
 print("")
 
-celery_app.conf.broker_pool_limit = None #otherwise when broker is down apply_async() hangs until broker is back up
+app.conf.broker_pool_limit = None #otherwise when broker is down apply_async() hangs until broker is back up
 
 from celery.result import AsyncResult
 
+import random 
+
+
+
 while True:
+
+    TIMEOUT = random.uniform(0.450, 0.510)
+    print(f"Task Timeout --->  {TIMEOUT           = }")
 
     try:
 
         # Assinatura da Tarefa/Task
-        task_signature = celery_app.signature("tasks.y_task")
+        task_signature = app.signature("tasks.y_task")
+        print(f"Task signature ->  {task_signature    = }")
         
         # Envia a Tarefa/Task para a instância de processamento
-        async_result = task_signature.apply_async((0.1, ),
+        async_run = task_signature.apply_async((0.500, ),
                                                   retry=True, 
                                                   retry_policy={
                                                      'max_retries': 3,
                                                      'retry_errors': (TimeoutError, ),
                                                   }
         )
-        # async_result = task_signature.delay()
+        
+        # async_run = task_signature.delay(8)
 
-        # update_state(async_result)
+        # update_state(async_run)
 
         # Recupera o ID da Tarefa/Task
-        print(f"Task Instance -->  {async_result.id = }")
+        print(f"Task Instance -->  {async_run.id      = }")
 
-        run = AsyncResult(async_result)
-        print(f"Task State ----->  {run.state       = }")
+        #run = AsyncResult(async_run)
+        #print(f"Task State ----->  {run.state      = }")
         
         # Recupera a mensagem de retorno da Tarefa/Task
-        result = async_result.get(TIMEOUT)
-        print(f"Task Result ---->  async_result.get = {result}")
-        #print(f"Task Ready ----->  {result.ready = }")
-        
-        run = AsyncResult(async_result)
-        print(f"---------------->  {run.state  = }")
-        print(f"---------------->  {run.status = }")
-        #print(f"--> {run.ready = }")
-
-        # Não Funciona --> TypeError("'str' object is not callable")
-        # state = async_result.state(async_result)
-        # print(f"task --> state: {state}")
-
-        # Não presta --> <AsyncResult: 4ab2fb6c-69bb-45ae-89da-c8d6ca426dfd>
-        # print(f"-->{res.id=}")
-
-        # Não presta --> <bound method AsyncResult.get of <AsyncResult: 4ab2fb6c-69bb-45ae-89da-c8d6ca426dfd>>
-        # print(f"-->{res.get=}") 
-
-        
+        result = async_run.get(TIMEOUT)
+        #print(f"Task Result ---->  result = async_run.get(TIMEOUT) = {result}")
+        print(f"Task Result ---->  {async_run.get()   = }")
+        print(f"Task Ready ----->  {async_run.ready() = }")
+        print(f"Task Ready ----->  {async_run.state   = }")
         
     except Exception as exc:
         print(f"{exc=} ")
 
     finally:
-        time.sleep(0.5)
+        #time.sleep(0.5)
         print("")
 
 
