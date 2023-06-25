@@ -1,4 +1,15 @@
-# producer.py
+# sec.py 
+# SEC - Saga Execution Coordinator
+#
+##
+# ORQUESTRAMENTO: De forma geral é mais flexivel e mais poderosa 
+#
+##
+# Descomplicando "Sagas"
+# https://www.youtube.com/watch?v=jMBfO52FttY&t=383s 
+#
+##
+# 
 
 from celery import Celery
 import time
