@@ -13,6 +13,9 @@ FROM python:alpine as base
 # pip 22.3.1
 # celery 5.2.7 (dawn-chorus)
 
+LABEL maintainer="Marcos Antônio de Carvalho <mrcos.antonio.carvalho@gmail.com>"
+LABEL description="Docker container with the Workers."
+
 # Baseado na imagem oficial do Alpine Linux e 
 # adiciona o pacote ca-certificates oficial
 RUN apk add --no-cache ca-certificates
@@ -58,7 +61,14 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements
 # Volta à instalação base
 FROM builder as code
 
+# Diretório do usuário
+WORKDIR /home/user
+
+RUN mkdir worker
+COPY --chown=1000:1000 src/worker/*.py worker/
 COPY --chown=1000:1000 src/*.py .
+
+
 
 COPY --chown=1000:1000 dockerfiles/celery/entrypoint.sh .
 RUN  chmod gu+x ./entrypoint.sh

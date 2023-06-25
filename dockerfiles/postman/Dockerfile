@@ -36,6 +36,9 @@ WORKDIR /home/user
 ##---------------------------##
 FROM base as builder
 
+LABEL maintainer="Marcos Antônio de Carvalho <mrcos.antonio.carvalho@gmail.com>"
+LABEL description="Docker container with the API."
+
 # Lista dos requisitos minimos
 COPY --chown=1000:1000 dockerfiles/postman/requirements /code/requirements
 
@@ -51,9 +54,12 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements
 # Volta à instalação base
 FROM builder as code
 
-COPY --chown=1000:1000 ./src/*.py .
+# Diretório do usuário
+WORKDIR /home/user
 
-
+RUN mkdir worker
+COPY --chown=1000:1000 src/worker/*.py worker/
+COPY --chown=1000:1000 src/*.py .
 
 
 

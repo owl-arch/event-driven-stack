@@ -148,11 +148,26 @@ fi
 # celery multi
 ##
 
+#${CELERY} \
+#  --app t worker \
+#  --hostname teste@%h \
+#  --loglevel info \
+#  --logfile /home/celery/log/%n_%i.log \
+#  --queues celery  \
+#  --time-limit 15 \
+#  --concurrency 2 \
+#  --prefetch-multiplier 6 \
+#  --pool prefork &
+
 ##--------------------##
 ##  COMMON (default)  ##
 ##--------------------##
+# /home/celery/.local/bin/celery -A t worker
+# /home/celery/.local/bin/celery -A tasks worker
+# command: "poetry run celery worker -A app.worker.celery_worker -l info -Q test-queue -c 1"
+# /home/celery/.local/bin/celery -A worker.tasks worker
 ${CELERY} \
-  --app tasks worker \
+  --app worker.tasks worker \
   --hostname default@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
@@ -161,6 +176,8 @@ ${CELERY} \
   --concurrency 2 \
   --prefetch-multiplier 6 \
   --pool prefork &
+  #
+  # --app tasks worker \
   #
   # --pidfile /home/celery/run/%n.pid \
   #
@@ -172,11 +189,12 @@ ${CELERY} \
   #--pidfile /home/celery/run/default_%n.pid \
   #--logfile /home/celery/log/%n_%i.log \
   #--pidfile /home/celery/run/%n.pid \  
-  
+
 #-----------------------------##
 #  TOO LOG (demasiado longo)  ##
 #-----------------------------##
-${CELERY} -A longs worker \
+${CELERY} \
+  --app worker.longs worker \
   --hostname long@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
@@ -191,27 +209,29 @@ ${CELERY} -A longs worker \
 #---------------------------##
 #  CHAIN (Cadeia/Pipeline)  ##
 #---------------------------##
-#${CELERY} -A chains worker \
-#  --hostname chain@%h \
-#  --loglevel info \
-#  --logfile /home/celery/log/chain_%n%I.log \
-#  --pidfile /home/celery/run/chain_%n.pid \
-#  --queues chain_queue \
-#  --concurrency 2 \
-#  --pool prefork &
-#  #--autoscale=8,1 &  
+${CELERY} \
+  --app worker.chains worker \
+  --hostname chain@%h \
+  --loglevel info \
+  --logfile /home/celery/log/chain_%n%I.log \
+  --pidfile /home/celery/run/chain_%n.pid \
+  --queues chain_queue \
+  --concurrency 2 \
+  --pool prefork &
+  #--autoscale=8,1 &  
 
 #----------------##
 #  BEAT (Batch)  ##
 #----------------##
-#${CELERY} -A beat worker -B \
-#  --hostname schedule@%h \
-#  --loglevel info \
-#  --logfile /home/celery/log/%n_%i.log \
-#  -s /home/celery/run/celerybeat-schedule \
-#  --queues schedule_queue \
-#  --concurrency 2 \
-#  --pool prefork &  
+${CELERY} \
+  --app worker.beat worker -B \
+  --hostname schedule@%h \
+  --loglevel info \
+  --logfile /home/celery/log/%n_%i.log \
+  -s /home/celery/run/celerybeat-schedule \
+  --queues schedule_queue \
+  --concurrency 2 \
+  --pool prefork &  
 #${CELERY} -A beat beat -q  -s /home/celery/log/celerybeat-schedule &  
 
 echo "Press [CTRL+C] to stop.."

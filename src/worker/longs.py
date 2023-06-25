@@ -19,9 +19,11 @@ import random
 ## from celery.utils.log import get_task_logger
 from celery import Celery
 
+## Registro de LOG
+## logger = get_task_logger(__name__)
+
 # Criei um pacote com __init__.py
-from databus import app
-#from module.databus import app
+from .broker import app 
 
 @app.task(
   queue='long_queue', # Fila de destino da task

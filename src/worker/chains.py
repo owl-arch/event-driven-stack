@@ -17,9 +17,11 @@
 from celery import Celery
 from celery import chain
 
+## Registro de LOG
+## logger = get_task_logger(__name__)
+
 # Criei um pacote com __init__.py
-from databus import app
-#from module.databus import app
+from .broker import app 
 
 ##---------------##
 ##  CHAIN TASKS  ##

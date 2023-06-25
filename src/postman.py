@@ -26,9 +26,10 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 # Obrigatório importar a função
-from tasks  import * # Processamento normal (Default)
-from longs  import * # Processamento demorados (too long)
-from chains import * # Processamento em cadeia (Chains)
+from worker.tasks  import * # Processamento normal (Default)
+from worker.longs  import * # Processamento demorados (too long)
+from worker.chains import * # Processamento em cadeia (Chains)
+
 # from tasks import hello # teste
 
 app_route = FastAPI(title="Python, FastAPI, and Docker")
@@ -58,7 +59,7 @@ def read_test():
     # Ações (tasks) do Evento
     hello.delay("Marcos Antonio de Carvalho")
     # Ações em cadeia pipeline (chains) do Evento
- ##   c.delay()
+    c.delay()
     # retorno da função do Evento
     fib.delay(18)
     return {"celery": "postman"}

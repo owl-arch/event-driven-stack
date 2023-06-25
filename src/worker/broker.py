@@ -1,8 +1,8 @@
 
 
 import os
-
 from celery import Celery
+
 
 REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
 REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
@@ -38,10 +38,23 @@ app_xxxx= Celery(
 
 
 # Inicialize o objeto Celery
+#app = Celery(
+#  #'owl',
+#   broker="amqp://owl:owl@rabbitmq",
+#   backend="rpc://",
+#  # include=["owl.tasks",],
+#)
+
+# Inicialize o objeto Celery
 app = Celery(
   'owl-databus',
    broker="pyamqp://owl:owl@rabbitmq",
-   #backend="redis://redis:6379",
+   backend="rpc://",
 )
+
+
+# Define a function
+def world():
+    print("Hello, World!")
 
 

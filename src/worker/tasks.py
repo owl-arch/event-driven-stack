@@ -19,12 +19,11 @@ from celery import Celery
 
 from celery.exceptions import SoftTimeLimitExceeded
 
+## Registro de LOG
 ## logger = get_task_logger(__name__)
 
 # Criei um pacote com __init__.py
-#import mymod.databus as teste
-from databus import app
-
+from .broker import app 
 
 #task_routes = ([
 #    ('vamos.tasks.*', {'queue': 'too_long_queue'}),
