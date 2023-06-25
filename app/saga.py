@@ -1,7 +1,16 @@
-# sec.py 
-# SEC - Saga Execution Coordinator
+# saga.py 
+# SEC - SAGA Execution Coordinator
 #
-##
+# - É a fonte da verdade com relação ao status da execução das diversas "sagas" 
+#   como dos eventos de venda, por exemplo:
+#              pedido emitido --> pedido faturado --> produto 
+#              separado -->  produto embarcado --> produto entregue.
+#
+# - Pode operar também para interfacear consulta sobre esse status dos
+#   eventos dos microsserviços.
+#
+# - Define-se aqui tambem o timeout e reentry dos eventos dos microsserviços.
+#
 # ORQUESTRAMENTO: De forma geral é mais flexivel e mais poderosa 
 #
 ##
@@ -9,7 +18,8 @@
 # https://www.youtube.com/watch?v=jMBfO52FttY&t=383s 
 #
 ##
-# 
+#
+##
 
 from celery import Celery
 import time
