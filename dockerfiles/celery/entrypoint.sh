@@ -148,22 +148,9 @@ fi
 # celery multi
 ##
 
-#${CELERY} \
-#  --app t worker \
-#  --hostname teste@%h \
-#  --loglevel info \
-#  --logfile /home/celery/log/%n_%i.log \
-#  --queues celery  \
-#  --time-limit 15 \
-#  --concurrency 2 \
-#  --prefetch-multiplier 6 \
-#  --pool prefork &
-
 ##--------------------##
 ##  COMMON (default)  ##
 ##--------------------##
-# /home/celery/.local/bin/celery -A t worker
-# /home/celery/.local/bin/celery -A tasks worker
 # command: "poetry run celery worker -A app.worker.celery_worker -l info -Q test-queue -c 1"
 # /home/celery/.local/bin/celery -A worker.tasks worker
 ${CELERY} \
@@ -204,21 +191,6 @@ ${CELERY} \
   --prefetch-multiplier 1 \
   --pool prefork &
   #--autoscale=8,1 &
-
-
-#---------------------------##
-#  CHAIN (Cadeia/Pipeline)  ##
-#---------------------------##
-${CELERY} \
-  --app worker.chains worker \
-  --hostname chain@%h \
-  --loglevel info \
-  --logfile /home/celery/log/chain_%n%I.log \
-  --pidfile /home/celery/run/chain_%n.pid \
-  --queues chain_queue \
-  --concurrency 2 \
-  --pool prefork &
-  #--autoscale=8,1 &  
 
 #----------------##
 #  BEAT (Batch)  ##

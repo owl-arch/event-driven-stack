@@ -1,3 +1,8 @@
+##
+# Author: Marcos Antônio de Carvalho (marcos.antonio.carvalho@gmail.com)
+# Descr.: Template para orquestramento de eventos de microsserviços
+#         utilizando o padrão SAGA.
+##
 # saga.py 
 # SEC - SAGA Execution Coordinator
 #
@@ -18,13 +23,12 @@
 # https://www.youtube.com/watch?v=jMBfO52FttY&t=383s 
 #
 ##
-#
-##
 
 from celery import Celery
 import time
 
-################### TIMEOUT = 5
+TIMEOUT = 5
+RETRIES = 3
 
 #app = Celery(
 #    broker="amqp://owl:owl@rabbitmq",
@@ -34,10 +38,10 @@ import time
 
 # Inicialize o objeto Celery
 app = Celery(
-  'owl',
+  'app',
    broker="amqp://owl:owl@rabbitmq",
    backend="rpc://",
-   include=["owl.tasks",],
+   include=["app.worker.tasks",],
 )
 
 # Configuração de timezone
@@ -73,14 +77,14 @@ while True:
     try:
 
         # Assinatura da Tarefa/Task
-        task_signature = app.signature("tasks.y_task")
+        task_signature = app.signature("worker.tasks.y_task")
         print(f"Task signature ->  {task_signature    = }")
         
         # Envia a Tarefa/Task para a instância de processamento
         async_run = task_signature.apply_async((0.500, ),
                                                   retry=True, 
                                                   retry_policy={
-                                                     'max_retries': 3,
+                                                     'max_retries': RETRIES,
                                                      'retry_errors': (TimeoutError, ),
                                                   }
         )
