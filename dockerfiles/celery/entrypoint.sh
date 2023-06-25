@@ -224,7 +224,7 @@ ${CELERY} \
 #  BEAT (Batch)  ##
 #----------------##
 ${CELERY} \
-  --app worker.beat worker -B \
+  --app worker.scheduler.beat worker -B \
   --hostname schedule@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \

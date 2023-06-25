@@ -1,12 +1,17 @@
 
+##
 # Inspiração
-# Repositório Oficial: docker-library/celery
-# https://github.com/docker-library/celery
+#   Repositório Oficial: docker-library/celery
+#   https://github.com/docker-library/celery
 #
 # Ajustei o Dockerfile !!!
 #
-# https://www.blueshoe.io/blog/strategies-for-slim-docker-images
-#
+#   https://www.blueshoe.io/blog/strategies-for-slim-docker-images
+##
+
+##-------------------------##
+##  M U L T I - S T A G E  ##
+##-------------------------## 
 
 FROM python:alpine as base
 # Python 3.11.3
@@ -62,14 +67,16 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements
 FROM builder as code
 
 # Diretório do usuário
-WORKDIR /home/user
+WORKDIR /home/celery
 
-RUN mkdir worker
-COPY --chown=1000:1000 src/worker/*.py worker/
-COPY --chown=1000:1000 src/*.py .
+# Prepara o diretório 'worker' e 'scheduler'
+RUN mkdir -p worker/scheduler
+COPY --chown=1000:1000 app/worker/*.py worker/
+## Prepara o diretório 'worker'
+#RUN mkdir worker
+COPY --chown=1000:1000 app/worker/scheduler/*.py worker/scheduler/
 
-
-
+# Script de inicialização
 COPY --chown=1000:1000 dockerfiles/celery/entrypoint.sh .
 RUN  chmod gu+x ./entrypoint.sh
 

@@ -1,16 +1,25 @@
+
+##
 # Inspiração
-# Repositório Oficial: docker-library/celery
-# https://github.com/docker-library/celery
+#   Repositório Oficial: docker-library/celery
+#   https://github.com/docker-library/celery
 #
 # Ajustei o Dockerfile !!!
 #
-# https://www.blueshoe.io/blog/strategies-for-slim-docker-images
-#
+#   https://www.blueshoe.io/blog/strategies-for-slim-docker-images
+##
+
+##-------------------------##
+##  M U L T I - S T A G E  ##
+##-------------------------## 
 
 FROM python:alpine as base
 # Python 3.11.3
 # pip 22.3.1
 # celery 5.2.7 (dawn-chorus)
+
+LABEL maintainer="Marcos Antônio de Carvalho <mrcos.antonio.carvalho@gmail.com>"
+LABEL description="Docker container with the Flower."
 
 # Setting para PYTHON
 ENV PYTHONDONTWRITEBYTECODE 1
