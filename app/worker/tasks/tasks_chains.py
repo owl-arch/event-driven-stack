@@ -1,4 +1,4 @@
-#---
+---
 # Author: Marcos Antonio de Carvalho (maio/2023)
 # Descr.: API Tasks define as Ações de processamento para
 #         os Eventos a ser processados pelos workers.

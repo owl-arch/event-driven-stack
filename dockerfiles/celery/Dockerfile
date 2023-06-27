@@ -69,11 +69,15 @@ FROM builder as code
 # Diretório do usuário
 WORKDIR /home/celery
 
-# Prepara o diretório 'worker' e 'scheduler'
-RUN mkdir -p worker/scheduler
-COPY --chown=1000:1000 app/worker/*.py worker/
 ## Prepara o diretório 'worker'
-#RUN mkdir worker
+COPY --chown=1000:1000 app/worker/*.py worker/
+
+# Prepara o diretório 'worker/tasks'
+RUN mkdir -p worker/tasks
+COPY --chown=1000:1000 app/worker/tasks/*.py worker/tasks/
+
+# Prepara o diretório 'scheduler'
+RUN mkdir -p worker/scheduler
 COPY --chown=1000:1000 app/worker/scheduler/*.py worker/scheduler/
 
 # Script de inicialização

@@ -3,11 +3,12 @@
 ```python
 @app_celery.task(
   name='Meu teste'        # Nome da task 
-  bind=true,     
-  max_retry=5,           # Tentará no máximo 5 vezes
-  default_retry_delay=20, # Tempo entre as tentativas
-  # retry_backoff=true    # Tempo entre tTentativa exponencial: 1, 2, 4, 8, 16,... 
-  retry_backoff=3         # Tempo entre tTentativa exponencial: 3, 6, 12, 24 48,... 
+  bind=True,     
+  max_retry=5,           # Tentará no máximo 7 vezes
+  default_retry_delay=3, # Tempo default entre as tentativas
+  # retry_backoff=true   # Tempo entre Tentativa exponencial: 5s,10s,20s,40s,88s,160s,320s
+  retry_backoff=7        # Tempo entre Tentativa exponencial: 5s,10s,20s,40s,88s,160s,320s 
+  retry_jitter=False,    #  Prefira 'True' em casos de uso do mundo real para randomizar os atrasos de repetição.
   # Auto retry caso algum na tupla aconteça
   # autoretry_for(TypeError,Exception),
   autoretry_for(ValueError,)

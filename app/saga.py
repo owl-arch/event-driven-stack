@@ -3,7 +3,10 @@
 # Descr.: Template para orquestramento de eventos de microsserviços
 #         utilizando o padrão SAGA.
 ##
-# saga.py 
+# Pattern SAGA: É Um padrão de design para garantir consistência em sistemas
+#               distribuídos com múltiplas bases de dados (como microsserviços).
+##
+# File: saga.py 
 # SEC - SAGA Execution Coordinator
 #
 # - É a fonte da verdade com relação ao status da execução das diversas "sagas" 
@@ -20,7 +23,7 @@
 #
 ##
 # Descomplicando "Sagas"
-# https://www.youtube.com/watch?v=jMBfO52FttY&t=383s 
+# https://www.youtube.com/watch?v=jMBfO52FttY&t=383s    
 #
 ##
 

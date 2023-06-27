@@ -50,10 +50,9 @@ def y_task(self, sleep_time=0):
 
 
 @app.task(
-  name='add_Task',   # Nome da task
-  max_retry=4,       # Tentará no máximo 4 vezes
-  retry_backoff=10,  # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
-                     # 2 minutos (120 segundos) tentando processar
+  name='add_Task',  # Nome da task
+  max_retry=7,      # Tentará no máximo 7 vezes
+  retry_backoff=5,  # Tempo entre Tentativa exponencial: 5s,10s,20s,40s,88s,160s,320s
 )
 def add(x, y):
     result = x + y

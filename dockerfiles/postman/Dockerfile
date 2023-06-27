@@ -70,6 +70,10 @@ COPY --chown=1000:1000 app/*.py .
 RUN mkdir worker
 COPY --chown=1000:1000 app/worker/*.py worker/
 
+# Prepara o diretório 'worker/tasks'
+RUN mkdir -p worker/tasks
+COPY --chown=1000:1000 app/worker/tasks/*.py worker/tasks/
+
 
 
 

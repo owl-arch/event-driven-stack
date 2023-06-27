@@ -7,10 +7,11 @@
 ##-----------##
 ##  POSTMAN  ##
 ##-----------##
-
+#
 # Muito util para disparar tarefas longas para outros Microsserviços 
 # realizar a medida que vão chegando, de modo a não comprometer a 
 # performance do Microsserviço corrente de atendimento direto ao usuário.
+##
 
 import os
 import time
@@ -25,10 +26,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-# Obrigatório importar a função
-from worker.tasks  import * # Processamento normal (Default)
-from worker.longs  import * # Processamento demorados (too long)
-from worker.chains import * # Processamento em cadeia (Chains)
+# É OBRIGATóRIO importar as funções das tasks dos workers
+from worker.tasks.tasks  import *   # Processamento normal (Default)
+#from worker.chains import *   # Processamento em cadeia (Chains)
+from worker.tasks.longs  import *   # Processamento demorados (too long)
 
 # from tasks import hello # teste
 
@@ -59,7 +60,7 @@ def read_test():
     # Ações (tasks) do Evento
     hello.delay("Marcos Antonio de Carvalho")
     # Ações em cadeia pipeline (chains) do Evento
-    c.delay()
+    #c.delay()
     # retorno da função do Evento
     fib.delay(18)
     return {"celery": "postman"}
