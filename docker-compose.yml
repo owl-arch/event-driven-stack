@@ -4,7 +4,7 @@
 #         Construida em containers Docker:
 #         - rabbitmq
 #         - flower
-#         - postman (Python - FastAPI e Celery)
+#         - webapi (Python - FastAPI e Celery)
 #         - celery  (Python - Celery)
 #---
 
@@ -72,12 +72,9 @@ services:
       dockerfile: dockerfiles/webapi/Dockerfile
     image: owl-arch/webapi:events-driven-stack
     container_name: 'task-producer-webapi'
-    hostname: postman
+    hostname: webapi
     entrypoint: python
     command: ./WebAPI.py  
-    environment:
-      - BROKER_URL=amqp://rabbitmq:5672
-      - RESULT_BACKEND=rpc://
     # user: nobody # Restrição de acesso 
     ports:
       - 8000:8000      
@@ -93,14 +90,12 @@ services:
       context: .
       dockerfile: dockerfiles/celery/Dockerfile
     container_name: 'task-consumer-worker'
-   #image: celery:services_domain
-   #hostname: A
+    #image: celery:services_domain
+    #hostname: A
     image: owl-arch/celery:events-driven-stack
     hostname: '{{.Node.ID}}'
-    #env_file: dockerfiles/celery/.env
+    env_file: dockerfiles/celery/.env # Deixei vazio para usar no futuro, se precisar.
     environment:
-      - BROKER_URL=amqp://owl:owl@rabbitmq:5672
-      - RESULT_BACKEND=rpc://
       - C_FORCE_ROOT=true
     #volumes: 
     #  - ./mount/celery/log/:/home/celery/log/
