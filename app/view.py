@@ -1,22 +1,24 @@
 
 from celery import Celery
-from worker.tasks.broker import app  # Messsage Bocker da aplicação
+
+print("config.py")
+from worker.tasks.config import app  # Messsage Bocker da aplicação
 
 def config_show():
     print("")
-    print(f"Celery --> {app.conf.enable_utc = }")
-    print(f"Celery --> {app.conf.timezone = }")  
-    print("* Queue DEFAULT *")
-    print(f"Celery --> {app.conf.task_default_queue = }")  
-    print(f"Celery --> {app.conf.task_default_exchange = }")  
-    print(f"Celery --> {app.conf.task_default_exchange_type = }")  
-    print(f"Celery --> {app.conf.task_default_routing_key = }")   
+    print(f"view.py --> {app.conf.enable_utc = }")
+    print(f"view.py --> {app.conf.timezone   = }")  
+    print("* Default Queue *")
+    print(f"config.py --> {app.conf.task_default_queue         = }")  
+    print(f"config.py --> {app.conf.task_default_exchange      = }")  
+    print(f"config.py --> {app.conf.task_default_exchange_type = }")  
+    print(f"config.py --> {app.conf.task_default_routing_key   = }")   
     print("# Message Broker *")
-    print(f"Celery --> {app.conf.broker_url = }") 
-    print(f"Celery --> {app.conf.result_backend = }") 
+    print(f"config.py --> {app.conf.broker_url     = }") 
+    print(f"config.py --> {app.conf.result_backend = }") 
+    print("")
+    print(f"view.py --> {app.conf.task_annotations = }")
     
-
-config_show()
 
 print("config update!")
 
@@ -36,7 +38,10 @@ class Config:
     task_default_exchange_type = "direct"
     task_default_routing_key = "default"
     # Rate Limit 
-    #task_annotations = {'tasks.add': {'rate_limit': '10/s'}}
+    task_annotations = ( 
+        {'worker.tasks.add':   {'rate_limit': '10/s'}},
+        {'worker.tasks.hello': {'rate_limit': '20/s'}} 
+        )
 
 # Configura a aplicação apartir do objeto/classe de configuração.
 app.config_from_object(Config)
