@@ -154,7 +154,7 @@ fi
 # command: "poetry run celery worker -A app.worker.celery_worker -l info -Q test-queue -c 1"
 # /home/celery/.local/bin/celery -A worker.tasks worker
 ${CELERY} \
-  --app worker.tasks.tasks worker \
+  --app worker.tasks.default worker \
   --hostname default@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \

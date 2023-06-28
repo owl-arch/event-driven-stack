@@ -27,7 +27,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 # É OBRIGATóRIO importar as funções das tasks dos workers
-from worker.tasks.tasks  import *   # Processamento normal (Default)
+from worker.tasks.default  import *   # Processamento normal (Default)
 #from worker.chains import *   # Processamento em cadeia (Chains)
 from worker.tasks.longs  import *   # Processamento demorados (too long)
 
@@ -54,11 +54,13 @@ async def show_config():
 def read_root():
     return {"Microservice:": "Postman"}
 
+
 # Roteamento do Evento
 @app_route.get("/test")
 def read_test():
     # Ações (tasks) do Evento
     hello.delay("Marcos Antonio de Carvalho")
+    app.send_tas(hello, ('Marcos Antonio de Carvalho',)) # mais opções de parametros
     # Ações em cadeia pipeline (chains) do Evento
     #c.delay()
     # retorno da função do Evento

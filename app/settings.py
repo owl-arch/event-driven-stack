@@ -29,10 +29,6 @@ task_default_exchange = "default"
 task_default_exchange_type = "direct"
 task_default_routing_key = "default"
 
-#CELERY_DEFAULT_QUEUE = "default"
-#CELERY_DEFAULT_EXCHANGE = "default"
-#CELERY_DEFAULT_EXCHANGE_TYPE = "direct"
-#CELERY_DEFAULT_ROUTING_KEY = "default"
 
 
 

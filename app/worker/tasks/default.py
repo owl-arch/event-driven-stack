@@ -22,8 +22,8 @@ from celery.exceptions import SoftTimeLimitExceeded
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
-# Criei um pacote com __init__.py
-from .broker import app 
+# Acesso ao Broker
+from worker.tasks.broker import app 
 
 #task_routes = ([
 #    ('vamos.tasks.*', {'queue': 'too_long_queue'}),
@@ -49,23 +49,31 @@ def y_task(self, sleep_time=0):
     return "this is y_task %s sec." % sleep_time    
 
 
-@app.task(
-  name='add_Task',  # Nome da task
-  max_retry=7,      # Tentará no máximo 7 vezes
-  retry_backoff=5,  # Tempo entre Tentativa exponencial: 5s,10s,20s,40s,88s,160s,320s
-)
+@app.task
 def add(x, y):
     result = x + y
     ## logger.info(f'Add: {x} + {y} = {result}')
     return result
 
-@app.task(
-  max_retry=4,       # Tentará no máximo 4 vezes
-  retry_backoff=10,  # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
-                     # 2 minutos (120 segundos) tentando processar
-)
+@app.task
 def hello(nome: str):
   return "hello {}".format(nome)
+
+# Função criada pelo ChatGPT
+# Defina a função para calcular a série de Fibonacci
+@app.task
+def fibonacci(n):
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+    elif n == 2:
+        return [0, 1]
+    else:
+        fib_sequence = [0, 1]
+        while len(fib_sequence) < n:
+            fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])
+        return fib_sequence
 
 
 @app.task(
@@ -90,19 +98,3 @@ def time_task(name):
     return helloworld 
   
  
-# Esta função foi criada no ChatGPT
-#
-# Defina a função para calcular a série de Fibonacci
-@app.task
-def fibonacci(n):
-    if n <= 0:
-        return []
-    elif n == 1:
-        return [0]
-    elif n == 2:
-        return [0, 1]
-    else:
-        fib_sequence = [0, 1]
-        while len(fib_sequence) < n:
-            fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])
-        return fib_sequence

@@ -22,8 +22,9 @@ from celery import Celery
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
-# Criei um pacote com __init__.py
-from .broker import app 
+# Acesso ao Broker
+from worker.tasks.broker import app 
+
 
 @app.task(
   queue='long_queue', # Fila de destino da task
