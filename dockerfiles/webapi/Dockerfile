@@ -30,14 +30,14 @@ RUN apk update && pip  --no-cache-dir install -U setuptools pip
 
 # Add a user with an explicit UID/GID and create necessary directories
 RUN set -eux; \
-    addgroup -g 1000 user; \
-    adduser  -u 1000 -G user user -D; 
+    addgroup -g 1000 celery; \
+    adduser  -u 1000 -G celery celery -D; 
 
 # Usuário Default  
-USER user
+USER celery
 
 # Diretório do usuário
-WORKDIR /home/user
+WORKDIR /home/celery
 
 ##---------------------------##
 ##  2a fase - REQUERIMENTOS  ##
@@ -46,7 +46,7 @@ WORKDIR /home/user
 FROM base as builder
 
 # Lista dos requisitos minimos
-COPY --chown=1000:1000 dockerfiles/postman/requirements /code/requirements
+COPY --chown=1000:1000 dockerfiles/webapi/requirements /code/requirements
 
 # Instalando as dependencias para gerar um cache
 RUN pip install --no-cache-dir --upgrade -r /code/requirements

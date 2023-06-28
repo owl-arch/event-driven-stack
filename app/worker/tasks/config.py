@@ -3,6 +3,20 @@
 #---
 # config.py
 
+#
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html
+#
+
+#import os 
+#BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'amqp://')
+
+## Broker settings.
+#broker_url = 'amqp://guest:guest@localhost:5672//'
+
+# List of modules to import when the Celery worker starts.
+#imports = ('myapp.tasks',)
+
+
 import os
 from celery import Celery
 
@@ -14,14 +28,12 @@ from celery import Celery
 # Objeto/Classe de Configuração.
 class Config:
     enable_utc = True
-    timezone   = 'Europe/London'
+    timezone   = 'America/Sao_Paulo'
     # Configura a comunicação DEFAULT
     task_default_queue         = "default_queue"
-    task_default_exchange      = "default"
+    task_default_exchange      = "default_queue"
     task_default_exchange_type = "direct"
     task_default_routing_key   = "default"
-    # Rate Limit 
-    #task_annotations = {'tasks.add': {'rate_limit': '10/s'}}
 
 # Inicialize o objeto Celery
 app = Celery(

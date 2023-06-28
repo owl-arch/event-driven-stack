@@ -21,12 +21,13 @@ from celery import Celery
 # Servidor ASGI (WebServer)
 import uvicorn
 
-# Biblioteca de API Rest
+# Biblioteca de API Rest   WebFastAPI WebAPI
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 # É OBRIGATóRIO importar as funções das tasks dos workers
 from worker.tasks.default  import *   # Processamento normal (Default)
+
 #from worker.chains import *   # Processamento em cadeia (Chains)
 from worker.tasks.longs  import *   # Processamento demorados (too long)
 

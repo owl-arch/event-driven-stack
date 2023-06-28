@@ -26,6 +26,9 @@
 # https://www.youtube.com/watch?v=jMBfO52FttY&t=383s    
 #
 ##
+# Descomplicando – SAGA Pattern
+# https://natanpf.com/2021/08/28/descomplicando-saga-pattern/
+##
 
 from celery import Celery
 import time

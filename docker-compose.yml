@@ -26,8 +26,8 @@ services:
     build: 
       context: .
       dockerfile: dockerfiles/rabbitmq/Dockerfile
-    image: owl/rabbitmq:events-driven-stack
-    container_name: 'owl-databus-message-broker'
+    image: owl-arch/rabbitmq:events-driven-stack
+    container_name: 'message-broker'
     hostname: rabbitmq
     ports:
       - "5672:5672"
@@ -36,6 +36,7 @@ services:
     volumes: 
       - ./mount/rabbitmq/data/:/var/lib/rabbitmq/
       - ./mount/rabbitmq/log/:/var/log/
+      - ./mount/rabbitmq/config:/etc/rabbitmq/rabbitmq.conf
     deploy:
       mode: global      
     networks:
@@ -47,9 +48,9 @@ services:
       dockerfile: dockerfiles/flower/Dockerfile
     entrypoint: celery
     command: flower
-    container_name: 'owl-databus-monitor-online'
+    container_name: 'monitor-online'
     hostname: flower
-    image: owl/flower:events-driven-stack
+    image: owl-arch/flower:events-driven-stack
     environment:
       # https://github.com/sirodoht/opencult.com/issues/43
       # Atenção para não colocar " nessas variáveis
@@ -65,15 +66,15 @@ services:
     networks:
       backend:
 
-  postman:
+  webapi:
     build: 
       context: .
-      dockerfile: dockerfiles/postman/Dockerfile
-    image: owl/postman:events-driven-stack
-    container_name: 'owl-event-producer-postman'
+      dockerfile: dockerfiles/webapi/Dockerfile
+    image: owl-arch/webapi:events-driven-stack
+    container_name: 'task-producer-webapi'
     hostname: postman
     entrypoint: python
-    command: ./postman.py  
+    command: ./WebAPI.py  
     environment:
       - BROKER_URL=amqp://rabbitmq:5672
       - RESULT_BACKEND=rpc://
@@ -91,10 +92,10 @@ services:
     build: 
       context: .
       dockerfile: dockerfiles/celery/Dockerfile
-    container_name: 'owl-event-consumer-worker'
+    container_name: 'task-consumer-worker'
    #image: celery:services_domain
    #hostname: A
-    image: owl/celery:events-driven-stack
+    image: owl-arch/celery:events-driven-stack
     hostname: '{{.Node.ID}}'
     #env_file: dockerfiles/celery/.env
     environment:
