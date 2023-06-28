@@ -18,6 +18,9 @@ FROM python:alpine as base
 # pip 22.3.1
 # celery 5.2.7 (dawn-chorus)
 
+LABEL maintainer="Marcos Antônio de Carvalho <mrcos.antonio.carvalho@gmail.com>"
+LABEL description="Docker container with the API."
+
 # Setting para PYTHON
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -41,9 +44,6 @@ WORKDIR /home/user
 ##  COMPILAÇÃO E CONSTRUÇÃO  ##
 ##---------------------------##
 FROM base as builder
-
-LABEL maintainer="Marcos Antônio de Carvalho <mrcos.antonio.carvalho@gmail.com>"
-LABEL description="Docker container with the API."
 
 # Lista dos requisitos minimos
 COPY --chown=1000:1000 dockerfiles/postman/requirements /code/requirements

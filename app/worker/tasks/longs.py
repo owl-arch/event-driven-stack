@@ -22,8 +22,8 @@ from celery import Celery
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
-# Acesso ao Broker
-from worker.tasks.broker import app 
+# Configuração da Aplicação
+from worker.tasks.config import app 
 
 
 @app.task(

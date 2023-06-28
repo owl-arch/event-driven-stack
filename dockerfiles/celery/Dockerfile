@@ -18,8 +18,8 @@ FROM python:alpine as base
 # pip 22.3.1
 # celery 5.2.7 (dawn-chorus)
 
-LABEL maintainer="Marcos Antônio de Carvalho <mrcos.antonio.carvalho@gmail.com>"
-LABEL description="Docker container with the Workers."
+LABEL maintainer  = "Marcos Antônio de Carvalho <mrcos.antonio.carvalho@gmail.com>"
+LABEL description = "Docker container with the Workers."
 
 # Baseado na imagem oficial do Alpine Linux e 
 # adiciona o pacote ca-certificates oficial

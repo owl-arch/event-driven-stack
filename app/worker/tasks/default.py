@@ -11,7 +11,6 @@ import os
 import time
 import random
 
-## import config
 ## from celery.utils.log import get_task_logger
 #import celery_settings
 
@@ -22,8 +21,8 @@ from celery.exceptions import SoftTimeLimitExceeded
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
-# Acesso ao Broker
-from worker.tasks.broker import app 
+# Configuração da Aplicação
+from worker.tasks.config import app 
 
 #task_routes = ([
 #    ('vamos.tasks.*', {'queue': 'too_long_queue'}),

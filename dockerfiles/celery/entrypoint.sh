@@ -158,7 +158,6 @@ ${CELERY} \
   --hostname default@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
-  --queues celery  \
   --time-limit 15 \
   --concurrency 2 \
   --prefetch-multiplier 6 \

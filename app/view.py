@@ -1,10 +1,6 @@
 
 from celery import Celery
-from worker.tasks.broker import app  # Bocker da aplicação
-
-def add(x, y):
-    return x + y
-
+from worker.tasks.broker import app  # Messsage Bocker da aplicação
 
 def config_show():
     print("")

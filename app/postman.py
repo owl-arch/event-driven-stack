@@ -16,7 +16,6 @@
 import os
 import time
 import random
-
 from celery import Celery
 
 # Servidor ASGI (WebServer)
@@ -60,7 +59,7 @@ def read_root():
 def read_test():
     # Ações (tasks) do Evento
     hello.delay("Marcos Antonio de Carvalho")
-    app.send_tas(hello, ('Marcos Antonio de Carvalho',)) # mais opções de parametros
+    #app.send_task(hello, ('Marcos Antonio de Carvalho',)) # mais opções de parametros
     # Ações em cadeia pipeline (chains) do Evento
     #c.delay()
     # retorno da função do Evento

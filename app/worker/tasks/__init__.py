@@ -1,2 +1,2 @@
-__all__ = ["broker", "default","chais", "longs"]
+__all__ = ["config","broker", "default","chais", "longs"]
 

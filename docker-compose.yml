@@ -76,10 +76,7 @@ services:
     command: ./postman.py  
     environment:
       - BROKER_URL=amqp://rabbitmq:5672
-      - CELERY_DEFAULT_QUEUE="default"
-      - CELERY_DEFAULT_EXCHANGE="default"
-      - CELERY_DEFAULT_EXCHANGE_TYPE="direct"
-      - CELERY_DEFAULT_ROUTING_KEY="default"
+      - RESULT_BACKEND=rpc://
     # user: nobody # Restrição de acesso 
     ports:
       - 8000:8000      
@@ -99,7 +96,7 @@ services:
    #hostname: A
     image: owl/celery:events-driven-stack
     hostname: '{{.Node.ID}}'
-    env_file: dockerfiles/celery/.env
+    #env_file: dockerfiles/celery/.env
     environment:
       - BROKER_URL=amqp://owl:owl@rabbitmq:5672
       - RESULT_BACKEND=rpc://
