@@ -34,7 +34,11 @@ class Config:
     task_default_exchange      = "default_queue"
     task_default_exchange_type = "direct"
     task_default_routing_key   = "default"
+    # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_create_missing_queues
+    # Se habilitado (padrão), qualquer fila especificada que não esteja definida
+    # em task_queues será criada automaticamente.
     task_create_missing_queues = "disable"
+    # https://docs.celeryq.dev/en/stable/userguide/routing.html
     task_routes = ([
         ('worker.tasks.default.*', {'queue': 'default_queue'}),
         ('worker.tasks.long.*',    {'queue': 'long_queue'}),

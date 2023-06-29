@@ -56,13 +56,9 @@ class Config:
         )
     app.conf.task_queues = (
         Queue('long_queue',   
-            exchange=Exchange('long_exchange', 
+            exchange=Exchange('long_queue', 
             type='direct'),
             routing_key='long_key'),
-        Queue('schedule_queue',   
-            exchange=Exchange('schedule_exchange', 
-            type='direct'),
-            routing_key='schedule_key'),
         ),
     # https://docs.celeryq.dev/en/stable/userguide/routing.html    
     task_routes = ([
