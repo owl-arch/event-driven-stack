@@ -1,17 +1,16 @@
----
+##
 # Author: Marcos Antonio de Carvalho (maio/2023)
 # Descr.: API Tasks define as Ações de processamento para
 #         os Eventos a ser processados pelos workers.
-#---
+##
 # Disponibilidade e Confiabilidade
 # Tratamento de Falhas no processamento do Celery
-#--
+##-
 
-# import os
-# import time
-# import random
+import os
+import time
+import random
 
-## import celery_config
 ## from celery.utils.log import get_task_logger
 
 from celery import Celery
@@ -20,15 +19,14 @@ from celery import chain
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
-# Criei um pacote com __init__.py
-from .broker import app 
+# Configuração da Aplicação
+from worker.tasks.config import app 
 
 ##---------------##
 ##  CHAIN TASKS  ##
 ##---------------##
 
 @app.task(
-  queue='chain_queue', # Fila de destino da task
   max_retry=4,         # Tentará no máximo 4 vezes
   retry_backoff=10,    # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
                        # 2 minutos (120 segundos) tentando processar
@@ -37,7 +35,6 @@ def a(x):
   return x * 4
 
 @app.task(
-  queue='chain_queue', # Fila de destino da task
   max_retry=4,         # Tentará no máximo 4 vezes
   retry_backoff=10,    # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
                        # 2 minutos (120 segundos) tentando processar
@@ -47,7 +44,6 @@ def b(x,y):
 
 @app.task(
   #name='pipeline',     # Nome da task
-  queue='chain_queue', # Fila de destino da task
   max_retry=4,         # Tentará no máximo 4 vezes
   retry_backoff=10,    # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
                        # 2 minutos (120 segundos) tentando processar

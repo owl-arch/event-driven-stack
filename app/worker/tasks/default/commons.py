@@ -12,7 +12,6 @@ import time
 import random
 
 ## from celery.utils.log import get_task_logger
-#import celery_settings
 
 from celery import Celery
 
@@ -23,13 +22,6 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 # Configuração da Aplicação
 from worker.tasks.config import app 
-
-#task_routes = ([
-#    ('vamos.tasks.*', {'queue': 'too_long_queue'}),
-##    ('web.tasks.*', {'queue': 'web'}),
-#    (re.compile(r'(video|image)\.tasks\..*'), {'queue': 'media'}),
-#],)
-
 
 ##----------------##
 ##  SIMPLE TASKS  ##

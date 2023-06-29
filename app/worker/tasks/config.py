@@ -1,4 +1,4 @@
-# Author: Marcos Antonio de Carvalho (maio/2023)
+# Author: Marcos Antonio de Carvalho (marcos.antonio.carvalho@gmail.com)
 # Descr.: Configuração do Celery e do acesso ao Message Broker
 #---
 # config.py
@@ -34,6 +34,13 @@ class Config:
     task_default_exchange      = "default_queue"
     task_default_exchange_type = "direct"
     task_default_routing_key   = "default"
+    task_create_missing_queues = "disable"
+    task_routes = ([
+        ('worker.tasks.default.*', {'queue': 'default_queue'}),
+        ('worker.tasks.long.*',    {'queue': 'long_queue'}),
+        ('worker.scheduler.*',     {'queue': 'schedule_queue'}),
+    ],) 
+
 
 # Inicialize o objeto Celery
 app = Celery(

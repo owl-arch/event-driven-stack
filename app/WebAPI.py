@@ -1,12 +1,12 @@
 #---
-# Author: Marcos Antonio de Carvalho (maio/2023)
-# Descr.: API Postman recebe as solicitações para processamento 
-#         das tasks assíncrono a ser distribuído aos workers.
+# Author: Marcos Antonio de Carvalho (marcos.antonio.carvalho@gmail.com)
+# Descr.: WebAPI recebe as solicitações para processamento das tasks
+#         assíncrono e distribuí nas filas para os workers processarem.
 #---
 
-##-----------##
-##  POSTMAN  ##
-##-----------##
+##----------##
+##  WebAPI  ##
+##----------##
 #
 # Muito util para disparar tarefas longas para outros Microsserviços 
 # realizar a medida que vão chegando, de modo a não comprometer a 
@@ -18,20 +18,26 @@ import time
 import random
 from celery import Celery
 
+
+##-----------------------------------------------------------##
+##  É OBRIGATóRIO importar as funções das tasks dos workers  ##
+##-----------------------------------------------------------##
+
+# Carrega as funções do processamento Online 
+from worker.tasks.default.load  import *   # Processamento normal (Default)
+from worker.tasks.long.load     import *   # Processamento demorados (too long)
+
+
+##--------------------------------------------##
+##  Interfaceamento da FastAPI para o Celery  ##
+##--------------------------------------------##
+
 # Servidor ASGI (WebServer)
 import uvicorn
 
 # Biblioteca de API Rest   WebFastAPI WebAPI
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-
-# É OBRIGATóRIO importar as funções das tasks dos workers
-from worker.tasks.default  import *   # Processamento normal (Default)
-
-#from worker.chains import *   # Processamento em cadeia (Chains)
-from worker.tasks.longs  import *   # Processamento demorados (too long)
-
-# from tasks import hello # teste
 
 app_route = FastAPI(title="Python, FastAPI, and Docker")
 
@@ -60,9 +66,8 @@ def read_root():
 def read_test():
     # Ações (tasks) do Evento
     hello.delay("Marcos Antonio de Carvalho")
-    #app.send_task(hello, ('Marcos Antonio de Carvalho',)) # mais opções de parametros
     # Ações em cadeia pipeline (chains) do Evento
-    #c.delay()
+    c.delay()
     # retorno da função do Evento
     fib.delay(18)
     return {"celery": "postman"}
