@@ -85,20 +85,18 @@ services:
     networks:
       backend:
 
-  celery:
+  worker:
     build: 
       context: .
-      dockerfile: dockerfiles/celery/Dockerfile
+      dockerfile: dockerfiles/worker/Dockerfile
     container_name: 'task-consumer-worker'
     #image: celery:services_domain
     #hostname: A
-    image: owl-arch/celery:events-driven-stack
+    image: owl-arch/worker:events-driven-stack
     hostname: '{{.Node.ID}}'
-    env_file: dockerfiles/celery/.env # Deixei vazio para usar no futuro, se precisar.
+    env_file: dockerfiles/worker/.env # Deixei vazio para usar no futuro, se precisar.
     environment:
       - C_FORCE_ROOT=true
-    #volumes: 
-    #  - ./mount/celery/log/:/home/celery/log/
     depends_on:
       - rabbitmq 
     #deploy:

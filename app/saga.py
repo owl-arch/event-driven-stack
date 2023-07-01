@@ -36,34 +36,12 @@ import time
 TIMEOUT = 5
 RETRIES = 3
 
-#app = Celery(
-#    broker="amqp://owl:owl@rabbitmq",
-#    backend="rpc://",
-#)
+# Configuração da Aplicação 
+from worker.config import app
+from worker.config import setup
 
-
-# Inicialize o objeto Celery
-app = Celery(
-  'app',
-   broker="amqp://owl:owl@rabbitmq",
-   backend="rpc://",
-   include=["app.worker.tasks",],
-)
-
-# Configuração de timezone
-app.conf.timezone = 'UTC'
-print(f"Celery --> {app.conf.timezone = }")
-
-#
-#task_ignore_result = False
-#task_ignore_result = True
-
-#
-task_track_started = False
-print(f"Celery --> {task_track_started = }")
-
-#
-#result_persistent=True
+# task_track_started 
+print(f"Celery --> {app.conf.task_track_started = }")
 
 print("")
 
@@ -73,29 +51,29 @@ from celery.result import AsyncResult
 
 import random 
 
-
-
 while True:
 
-    TIMEOUT = random.uniform(0.450, 0.510)
+    TIMEOUT = random.uniform(0.480, 0.550)
     print(f"Task Timeout --->  {TIMEOUT           = }")
 
     try:
 
         # Assinatura da Tarefa/Task
-        task_signature = app.signature("worker.tasks.y_task")
+        #task_signature = app.signature("worker.tasks.y_task")
+        task_signature = app.signature("worker.tasks.default.commons.y_task")
         print(f"Task signature ->  {task_signature    = }")
         
         # Envia a Tarefa/Task para a instância de processamento
-        async_run = task_signature.apply_async((0.500, ),
+        #async_run = task_signature.apply_async(0.1)
+        async_run = task_signature.apply_async((0.5, ),
                                                   retry=True, 
-                                                  retry_policy={
+                                                 retry_policy={
                                                      'max_retries': RETRIES,
-                                                     'retry_errors': (TimeoutError, ),
+                                                    'retry_errors': (TimeoutError, ),
                                                   }
         )
         
-        # async_run = task_signature.delay(8)
+        async_run = task_signature.delay()
 
         # update_state(async_run)
 
@@ -116,7 +94,7 @@ while True:
         print(f"{exc=} ")
 
     finally:
-        #time.sleep(0.5)
+        time.sleep(0.5)
         print("")
 
 

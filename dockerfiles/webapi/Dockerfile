@@ -66,25 +66,9 @@ WORKDIR /home/celery
 # Prepara o diretório 'app'
 COPY --chown=1000:1000 app/*.py .
 
-# Prepara o diretório 'worker'
-RUN mkdir worker
-COPY --chown=1000:1000 app/worker/*.py worker/
+## Prepara o diretório 'worker'
+COPY --chown=1000:1000 app/worker/ worker/
 
-# Prepara o diretório 'worker/tasks'
-RUN mkdir -p worker/tasks
-COPY --chown=1000:1000 app/worker/tasks/*.py worker/tasks/
-
-# Prepara o diretório 'worker/tasks/default'
-RUN mkdir -p worker/tasks/default
-COPY --chown=1000:1000 app/worker/tasks/default/*.py worker/tasks/default/
-
-# Prepara o diretório 'worker/tasks/long'
-RUN mkdir -p worker/tasks/long
-COPY --chown=1000:1000 app/worker/tasks/long/*.py worker/tasks/long/
-
-# Prepara o diretório 'worker/tasks'
-#RUN mkdir -p worker/tasks
-#COPY --chown=1000:1000 app/worker/tasks/*.py worker/tasks/
 
 
 

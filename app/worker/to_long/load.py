@@ -6,7 +6,7 @@
 from celery import Celery
 
 # Carrega as funções do processamento Online dos Workers LONG.
-from worker.tasks.long.commons import *  # Funções Comuns
+from worker.to_long.commons import *  # Funções Comuns
 
 
 

@@ -22,12 +22,12 @@ from celery import Celery
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
-# Configuração da Aplicação
-from worker.tasks.config import app 
+# Configuração da Aplicação 
+from worker.config import app
+from worker.config import setup
 
 
 @app.task(
-  queue='long_queue', # Fila de destino da task
   max_retry=4,        # Tentará no máximo 4 vezes
   retry_backoff=10,   # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
                       # 2 minutos (120 segundos) tentando processar
@@ -40,7 +40,6 @@ def fib(n):
 
 @app.task(
   name='Test time LONG', # Nome da task 
-  queue='long_queue',    # Fila de destino da task
  # max_retry=4,          # Tentará no máximo 4 vezes
  # retry_backoff=10,     # Tempo entre Tentativa exponencial: 10s, 20s, 30s e 60s.
                          # 2 minutos (120 segundos) tentando processar

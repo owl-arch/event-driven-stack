@@ -19,8 +19,9 @@ from celery import chain
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
-# Configuração da Aplicação
-from worker.tasks.config import app 
+# Configuração da Aplicação 
+from worker.config import app
+from worker.config import setup
 
 ##---------------##
 ##  CHAIN TASKS  ##

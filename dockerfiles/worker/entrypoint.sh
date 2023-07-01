@@ -154,7 +154,7 @@ fi
 # command: "poetry run celery worker -A app.worker.celery_worker -l info -Q test-queue -c 1"
 # /home/celery/.local/bin/celery -A worker.tasks worker
 ${CELERY} \
-  --app worker.tasks.default.load worker \
+  --app worker.default.load worker \
   --hostname default@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
@@ -180,16 +180,27 @@ ${CELERY} \
 #  TOO LOG (demasiado longo)  ##
 #-----------------------------##
 ${CELERY} \
-  --app worker.tasks.long.load worker \
-  --hostname long@%h \
+  --app worker.to_long.load worker \
+  --hostname to_long@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
-  --queues long_queue  \
+  --queues to_long_queue  \
   -Ofair \
   --concurrency 2 \
   --prefetch-multiplier 1 \
   --pool prefork &
   #--autoscale=8,1 &
+
+${CELERY} \
+  --app worker.e_commerce.load worker \
+  --hostname e_commerce@%h \
+  --loglevel info \
+  --logfile /home/celery/log/%n_%i.log \
+  --queues e_commerce_queue  \
+  --time-limit 15 \
+  --concurrency 2 \
+  --prefetch-multiplier 6 \
+  --pool prefork &
 
 #----------------##
 #  BEAT (Batch)  ##

@@ -54,7 +54,7 @@ RUN mkdir log; \
 FROM base as builder
 
 # Lista dos requisitos minimos
-COPY --chown=1000:1000 dockerfiles/celery/requirements /code/requirements
+COPY --chown=1000:1000 dockerfiles/worker/requirements /code/requirements
 
 # Instalando as dependencias para gerar um cache
 RUN pip install --no-cache-dir --upgrade -r /code/requirements
@@ -70,26 +70,10 @@ FROM builder as code
 WORKDIR /home/celery
 
 ## Prepara o diretório 'worker'
-COPY --chown=1000:1000 app/worker/*.py worker/
-
-# Prepara o diretório 'worker/tasks'
-RUN mkdir -p worker/tasks
-COPY --chown=1000:1000 app/worker/tasks/*.py worker/tasks/
-
-# Prepara o diretório 'worker/tasks/default'
-RUN mkdir -p worker/tasks/default
-COPY --chown=1000:1000 app/worker/tasks/default/*.py worker/tasks/default/
-
-# Prepara o diretório 'worker/tasks/long'
-RUN mkdir -p worker/tasks/long
-COPY --chown=1000:1000 app/worker/tasks/long/*.py worker/tasks/long/
-
-# Prepara o diretório 'scheduler'
-RUN mkdir -p worker/scheduler
-COPY --chown=1000:1000 app/worker/scheduler/*.py worker/scheduler/
+COPY --chown=1000:1000 app/worker/ worker/
 
 # Script de inicialização
-COPY --chown=1000:1000 dockerfiles/celery/entrypoint.sh .
+COPY --chown=1000:1000 dockerfiles/worker/entrypoint.sh .
 RUN  chmod gu+x ./entrypoint.sh
 
 # Configure o ponto de entrada, isso garante que o pyenv seja inicializado quando um contêiner é iniciado

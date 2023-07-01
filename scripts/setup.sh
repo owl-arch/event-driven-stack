@@ -24,7 +24,7 @@ alias wls="figlet 'worker Lister' | lolcat; docker exec -it task-consumer-worker
 alias wll="figlet 'worker Lister' | lolcat; docker exec -it task-consumer-worker sh -c 'ls -la $@'"
 
 # Shell do Consumer(Worker) e do Producer(postman)
-alias  server="figlet 'Server' | lolcat; docker exec -it task-producer-postman sh -c '/bin/sh'"
+alias  server="figlet 'Server' | lolcat; docker exec -it task-producer-webapi sh -c '/bin/sh'"
 alias  worker="figlet 'Worker' | lolcat; docker exec -it task-consumer-worker  sh -c '/bin/sh'"
 
 

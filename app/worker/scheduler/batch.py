@@ -5,8 +5,9 @@
 #---
 # batch.py
 
-# Configuração da Aplicação
-from worker.tasks.config import app 
+# Configuração da Aplicação 
+from worker.config import app
+from worker.config import setup
 
 @app.task
 def say(what):

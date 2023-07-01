@@ -6,8 +6,8 @@
 from celery import Celery
 
 # Carrega as funções do processamento Online do Workers DEFAULT.
-from worker.tasks.default.commons import *  # Funções Comuns
-from worker.tasks.default.chains  import *  # Funções em Cadeia
+from worker.default.commons import *  # Funções Comuns
+from worker.default.chains  import *  # Funções em Cadeia
 
 
 
