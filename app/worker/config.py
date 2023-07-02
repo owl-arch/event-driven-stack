@@ -37,6 +37,9 @@ app = Celery(
 # Configuration and defaults
 # https://celeryproject.readthedocs.io/zh_CN/latest/userguide/configuration.html
 ##
+# Scaling Celery to handle workflows and multiple queues
+# https://lokesh1729.com/posts/scaling-celery-to-handle-workflows-and-multiple-queues/
+##
 #
 # Define a function
 class setup:
@@ -45,21 +48,53 @@ class setup:
         enable_utc = True
         timezone   = 'America/Sao_Paulo'
         # Configura a comunicação DEFAULT
-        task_default_queue         = "default_queue"
-        task_default_exchange      = "default_exchange"
+        task_default_queue         = "default"
+        task_default_exchange      = "default"
         task_default_exchange_type = "direct"
-        task_default_routing_key   = "default.key"
+        task_default_routing_key   = "default"
         # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_create_missing_queues
         # Se habilitado (padrão), qualquer fila especificada que não esteja definida
         # em task_queues será criada automaticamente.
         task_create_missing_queues = "disable"
+        ##
+        # Routing Tasks
         # https://docs.celeryq.dev/en/stable/userguide/routing.html
+        #
+        ##------------------------------##
+        ##  Define a criação de QUEUEs  ##
+        ##------------------------------##
+        # Não fuciona! E ainda bagunçou o reteamento
+        #
+        #from kombu import Exchange, Queue
+        #task_queues = (
+        #    Queue( 'default',   
+        #           exchange=Exchange('ex_default', type='direct'),
+        #           #routing_key='default'
+        #           ),
+        #    Queue( 'default',   
+        #           exchange=Exchange('ex_default', type='direct'),
+        #           #routing_key='to_long'
+        #           ),
+        #    Queue( 'scheduler',   
+        #           exchange=Exchange('ex_default', type='direct'),
+        #           #routing_key='scheduler'
+        #           ),
+        #    Queue( 'eCommerce',   
+        #           exchange=Exchange('ex_eCommerce', type='direct'),
+        #           #routing_key='eCommerce'
+        #           ),
+        #)
+        ##--------------------------------##
+        ##  Define o ROTEAMENTO de Tasks  ##
+        ##--------------------------------##
+        # worker.scheduler.batch.say
         task_routes = ([
-            ('worker.scheduler.*',  {'queue': 'schedule_queue'}),
-            ('worker.default.*',    {'queue': 'default_queue'}),
-            ('worker.to_long.*',    {'queue': 'to_long_queue'}),
-            ('worker.e_commerce.*', {'queue': 'e_commerce_queue'}),
+            ('worker.default.*',   {'queue': 'default',}),
+            ('worker.long.*',      {'queue': 'long',}),
+            ('worker.scheduler.*', {'queue': 'scheduler',}),
+            ('worker.eCommerce.*', {'queue': 'eCommerce',}),
         ],)
+        ##
         # https://celeryproject.readthedocs.io/zh_CN/latest/userguide/configuration.html
         # True: Task vai relatar 'started' quando a tarefa for executada por um worker.
         # (Default False)

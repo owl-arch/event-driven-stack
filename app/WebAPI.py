@@ -24,9 +24,9 @@ from celery import Celery
 ##-----------------------------------------------------------##
 
 # Carrega as funções do processamento Online 
-from worker.e_commerce.load import * # SAGA e-commerce
-from worker.default.load    import * # Processamento normal (Default)
-from worker.to_long.load    import * # Processamento demorados (too long)
+from worker.eCommerce.load import * # SAGA e-commerce
+from worker.default.load   import * # Processamento normal (Default)
+from worker.long.load      import * # Processamento demorados (too long)
 
 
 ##--------------------------------------------##

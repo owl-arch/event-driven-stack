@@ -155,7 +155,7 @@ fi
 # /home/celery/.local/bin/celery -A worker.tasks worker
 ${CELERY} \
   --app worker.default.load worker \
-  --hostname default@%h \
+  --hostname tasks_default@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
   --time-limit 15 \
@@ -180,23 +180,26 @@ ${CELERY} \
 #  TOO LOG (demasiado longo)  ##
 #-----------------------------##
 ${CELERY} \
-  --app worker.to_long.load worker \
-  --hostname to_long@%h \
+  --app worker.long.load worker \
+  --hostname tasks_long@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
-  --queues to_long_queue  \
+  --queues long  \
   -Ofair \
   --concurrency 2 \
   --prefetch-multiplier 1 \
   --pool prefork &
   #--autoscale=8,1 &
 
+#-----------------------------------##
+#  eCommerce (Comercio Eletronico)  ##
+#-----------------------------------##
 ${CELERY} \
-  --app worker.e_commerce.load worker \
-  --hostname e_commerce@%h \
+  --app worker.eCommerce.load worker \
+  --hostname eCommerce@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
-  --queues e_commerce_queue  \
+  --queues eCommerce  \
   --time-limit 15 \
   --concurrency 2 \
   --prefetch-multiplier 6 \
@@ -207,11 +210,11 @@ ${CELERY} \
 #----------------##
 ${CELERY} \
   --app worker.scheduler.load worker -B \
-  --hostname schedule@%h \
+  --hostname scheduler@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
   -s /home/celery/run/celerybeat-schedule \
-  --queues schedule_queue \
+  --queues scheduler \
   --concurrency 2 \
   --pool prefork &  
 #${CELERY} -A beat beat -q  -s /home/celery/log/celerybeat-schedule &  
