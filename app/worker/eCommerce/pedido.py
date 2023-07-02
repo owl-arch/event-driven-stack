@@ -21,13 +21,13 @@ from celery import shared_task
 
 # Adicionar um Pedido de Venda
 @shared_task(bind=True)
-def adicionar(self,):
+def criar_pedido(self,):
     time.sleep(0.5)
     return "Pedido Criado"
 
 # Cancelar um Pedido de Venda
 @app.task(bind=True)
-def cancelar(self, id):
+def cancelar_pedido(self, pedido):
     time.sleep(0.5)
     return "Pedido Cancelado"   
 

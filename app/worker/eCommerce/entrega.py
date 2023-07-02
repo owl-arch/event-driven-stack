@@ -20,12 +20,12 @@ from worker.config import setup
 from celery import shared_task
 
 @shared_task(bind=True)
-def envia(self,):
+def iniciar_entrega(self,):
     time.sleep(0.5)
     return "Entrega em Andamento"
 
 @app.task(bind=True)
-def ok(self, id):
+def confirma_entraga(self, id):
     time.sleep(0.5)
     return "Entrega Concluida"   
 

@@ -20,12 +20,12 @@ from worker.config import setup
 from celery import shared_task
 
 @shared_task(bind=True)
-def pagamento(self,):
+def efetuar_cobranca(self,):
     time.sleep(0.5)
     return "Pagamento Efetuado"
 
 @app.task(bind=True)
-def devolver(self, id):
+def devolver_dinheiro(self, id):
     time.sleep(0.5)
     return "Dinheiro Devolvido"   
 

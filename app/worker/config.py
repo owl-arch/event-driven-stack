@@ -60,39 +60,15 @@ class setup:
         # Routing Tasks
         # https://docs.celeryq.dev/en/stable/userguide/routing.html
         #
-        ##------------------------------##
-        ##  Define a criação de QUEUEs  ##
-        ##------------------------------##
-        # Não fuciona! E ainda bagunçou o reteamento
-        #
-        #from kombu import Exchange, Queue
-        #task_queues = (
-        #    Queue( 'default',   
-        #           exchange=Exchange('ex_default', type='direct'),
-        #           #routing_key='default'
-        #           ),
-        #    Queue( 'default',   
-        #           exchange=Exchange('ex_default', type='direct'),
-        #           #routing_key='to_long'
-        #           ),
-        #    Queue( 'scheduler',   
-        #           exchange=Exchange('ex_default', type='direct'),
-        #           #routing_key='scheduler'
-        #           ),
-        #    Queue( 'eCommerce',   
-        #           exchange=Exchange('ex_eCommerce', type='direct'),
-        #           #routing_key='eCommerce'
-        #           ),
-        #)
         ##--------------------------------##
-        ##  Define o ROTEAMENTO de Tasks  ##
+        ##  Lista de ROTEADORES de Tasks  ##
         ##--------------------------------##
-        # worker.scheduler.batch.say
         task_routes = ([
-            ('worker.default.*',   {'queue': 'default',}),
-            ('worker.long.*',      {'queue': 'long',}),
-            ('worker.scheduler.*', {'queue': 'scheduler',}),
-            ('worker.eCommerce.*', {'queue': 'eCommerce',}),
+             # Os roteadores são consultados em ordem.
+            ('worker.default.*',   {'queue': 'default',   }),
+            ('worker.long.*',      {'queue': 'long',      }),
+            ('worker.scheduler.*', {'queue': 'scheduler', }),
+            ('worker.eCommerce.*', {'queue': 'eCommerce', }),
         ],)
         ##
         # https://celeryproject.readthedocs.io/zh_CN/latest/userguide/configuration.html

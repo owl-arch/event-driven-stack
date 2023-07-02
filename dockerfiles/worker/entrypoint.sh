@@ -155,7 +155,7 @@ fi
 # /home/celery/.local/bin/celery -A worker.tasks worker
 ${CELERY} \
   --app worker.default.load worker \
-  --hostname tasks_default@%h \
+  --hostname default@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
   --time-limit 15 \
@@ -181,7 +181,7 @@ ${CELERY} \
 #-----------------------------##
 ${CELERY} \
   --app worker.long.load worker \
-  --hostname tasks_long@%h \
+  --hostname long@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
   --queues long  \

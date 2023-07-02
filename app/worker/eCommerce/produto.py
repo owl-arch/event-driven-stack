@@ -21,13 +21,13 @@ from celery import shared_task
 
 # Separa o produto no estoque
 @shared_task(bind=True)
-def separa(self,produto):
+def separa_produto(self,produto):
     time.sleep(0.5)
     return "Produto Separado"
 
 # Devolve o produto ao estoque
 @app.task(bind=True)
-def devolve(self, produto):
+def devolver_produto(self, produto):
     time.sleep(0.5)
     return "Produto Devolvido"   
 

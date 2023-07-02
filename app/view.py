@@ -6,7 +6,7 @@
 from celery import Celery
 
 print("config.py")
-from worker.tasks.config import app  # Messsage Bocker da aplicação
+from worker.config import app  # Messsage Bocker da aplicação
 
 def config_show():
     print("")
@@ -20,15 +20,13 @@ def config_show():
     print("# Message Broker *")
     print(f"config.py --> {app.conf.broker_url     = }") 
     print(f"config.py --> {app.conf.result_backend = }") 
-    print("")
-    print(f"view.py --> {app.conf.task_annotations = }")
-    print("* QUEUE *")
-    print(f"view.py --> {app.conf.task_queues = }")
+    #print("")
+    #print(f"view.py --> {app.conf.task_annotations = }")
     print("* ROUTERS *")
     print(f"view.py --> {app.conf.task_routes = }")
     print("")
     # https://docs.celeryq.dev/en/stable/userguide/application.html
-    print(f"view.py --> {app.conf.table(with_defaults=False, censored=True) = }")
+    #print(f"view.py --> {app.conf.table(with_defaults=False, censored=True) = }")
     #print(f"view.py --> {app.conf.table(with_defaults=True, censored=True) = }")
     
 
@@ -54,18 +52,20 @@ class Config:
         {'worker.tasks.add':   {'rate_limit': '10/s'}},
         {'worker.tasks.hello': {'rate_limit': '20/s'}} 
         )
-    app.conf.task_queues = (
-        Queue('long_queue',   
-            exchange    = Exchange('long_queue', 
-            type        = 'direct'),
-            routing_key = 'long_key'),
-        ),
-    # https://docs.celeryq.dev/en/stable/userguide/routing.html    
+    ##
+    # Routing Tasks
+    # https://docs.celeryq.dev/en/stable/userguide/routing.html
+    #
+    ##--------------------------------##
+    ##  Lista de ROTEADORES de Tasks  ##
+    ##--------------------------------##
     task_routes = ([
-        ('worker.tasks.default.*', {'queue': 'default_queue'}),
-        ('worker.tasks.long.*',    {'queue': 'long_queue'}),
-        ('worker.scheduler.*',     {'queue': 'schedule_queue'}),
-    ],)   
+            # Os roteadores são consultados em ordem.
+        ('worker.default.*',   {'queue': 'default',   }),
+        ('worker.long.*',      {'queue': 'long',      }),
+        ('worker.scheduler.*', {'queue': 'scheduler', }),
+        ('worker.eCommerce.*', {'queue': 'eCommerce', }),
+    ],) 
      
 
 # Configura a aplicação apartir do objeto/classe de configuração.
