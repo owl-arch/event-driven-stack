@@ -42,6 +42,14 @@ from fastapi.responses import HTMLResponse
 
 app_route = FastAPI(title="Python, FastAPI, and Docker")
 
+# Roteamento do eCommerce
+@app_route.get("/sale")
+def read_test():
+    # SAGA Execution Coordinator
+    saga_execution.delay('123')
+    return {"eCommerce": "SAGA Execution Coordinator"}
+
+
 @app_route.get("/config/", response_class=HTMLResponse)
 async def show_config():
     html_content = """

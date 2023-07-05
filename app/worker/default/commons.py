@@ -20,6 +20,8 @@ from celery.exceptions import SoftTimeLimitExceeded
 ## Registro de LOG
 ## logger = get_task_logger(__name__)
 
+ ## logger.info(f'Add: {x} + {y} = {result}')
+
 # Configuração da Aplicação 
 from worker.config import app
 from worker.config import setup

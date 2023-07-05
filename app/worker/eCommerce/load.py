@@ -7,12 +7,8 @@
 
 from celery import Celery
 # Carrega as funções do processamento Online do Workers DEFAULT.
-from worker.eCommerce.pedido     import *  # Tratamento de PEDIDO de Venda
-from worker.eCommerce.produto    import *  # Tratamento da Movimentação de PRODUTOS
-from worker.eCommerce.financeiro import *  # Tratamento da Movimentação FINANCEIRA
-from worker.eCommerce.entrega    import *  # Tratamento da ENTREGA
-
-
-
-
-
+from worker.eCommerce.order   import *  # Tratamento de PEDIDO de Venda
+from worker.eCommerce.product import *  # Tratamento da Movimentação de PRODUTOS
+from worker.eCommerce.payment import *  # Tratamento da Movimentação FINANCEIRA
+from worker.eCommerce.deliver import *  # Tratamento da ENTREGA
+from worker.eCommerce.saga    import *  # Tratamento do SAGA Execution Coordinator
