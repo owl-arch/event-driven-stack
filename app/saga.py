@@ -40,6 +40,9 @@ RETRIES = 3
 from worker.config import app
 from worker.config import setup
 
+# Carrega as funções do processamento Online do Workers eCommerce.
+from worker.eCommerce.order   import *  # Tratamento de PEDIDO de Venda
+
 # task_track_started 
 print(f"Celery --> {app.conf.task_track_started = }")
 
@@ -53,27 +56,27 @@ import random
 
 while True:
 
-    TIMEOUT = random.uniform(0.480, 0.550)
+    #TIMEOUT = random.uniform(0.480, 0.550)
     print(f"Task Timeout --->  {TIMEOUT           = }")
 
     try:
 
         # Assinatura da Tarefa/Task
-        #task_signature = app.signature("worker.tasks.y_task")
-        task_signature = app.signature("worker.tasks.default.commons.y_task")
+        task_signature = app.signature("worker.eCommerce.order.create_order")
+        # task_signature = app.signature("worker.default.commons.y_task")
         print(f"Task signature ->  {task_signature    = }")
         
         # Envia a Tarefa/Task para a instância de processamento
         #async_run = task_signature.apply_async(0.1)
-        async_run = task_signature.apply_async((0.5, ),
-                                                  retry=True, 
-                                                 retry_policy={
-                                                     'max_retries': RETRIES,
+        async_run = task_signature.apply_async(("123", ),
+                                                retry=True, 
+                                                retry_policy={
+                                                    'max_retries': RETRIES,
                                                     'retry_errors': (TimeoutError, ),
-                                                  }
+                                                }
         )
         
-        async_run = task_signature.delay()
+        #async_run = task_signature.delay("123")
 
         # update_state(async_run)
 
@@ -91,6 +94,8 @@ while True:
         print(f"Task Ready ----->  {async_run.state   = }")
         
     except Exception as exc:
+
+
         print(f"{exc=} ")
 
     finally:

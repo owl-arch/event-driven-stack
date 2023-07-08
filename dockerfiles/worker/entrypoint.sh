@@ -208,15 +208,16 @@ ${CELERY} \
 #----------------##
 #  BEAT (Batch)  ##
 #----------------##
-${CELERY} \
-  --app worker.scheduler.load worker -B \
-  --hostname scheduler@%h \
-  --loglevel info \
-  --logfile /home/celery/log/%n_%i.log \
-  -s /home/celery/run/celerybeat-schedule \
-  --queues scheduler \
-  --concurrency 2 \
-  --pool prefork &  
+#${CELERY} \
+#  --app worker.scheduler.load worker -B \
+#  --hostname scheduler@%h \
+#  --loglevel info \
+#  --logfile /home/celery/log/%n_%i.log \
+#  -s /home/celery/run/celerybeat-schedule \
+#  --queues scheduler \
+#  --concurrency 2 \
+#  --pool prefork &  
+
 #${CELERY} -A beat beat -q  -s /home/celery/log/celerybeat-schedule &  
 
 echo "Press [CTRL+C] to stop.."

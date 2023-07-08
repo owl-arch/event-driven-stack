@@ -33,6 +33,10 @@ app = Celery(
         # include=["owl.tasks",],
     )
 
+
+
+
+
 ##
 # Configuration and defaults
 # https://celeryproject.readthedocs.io/zh_CN/latest/userguide/configuration.html
@@ -41,7 +45,7 @@ app = Celery(
 # https://lokesh1729.com/posts/scaling-celery-to-handle-workflows-and-multiple-queues/
 ##
 #
-# Define a function
+# Define a classe
 class setup:
     # Objeto/Classe de Configuração.
     class Config:
@@ -83,5 +87,9 @@ class setup:
     # https://docs.celeryq.dev/en/stable/userguide/application.html
     # Configura a aplicação apartir do objeto/classe de configuração.
     app.config_from_object(Config)
+
+
+
+
 
 

@@ -1,2 +1,2 @@
-__all__ = [ "load", "pedido", "produto","financeiro", "entrega"]
+__all__ = [ "load", "saga", "order", "product","payment", "deliver", "log"]
 

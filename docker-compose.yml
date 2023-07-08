@@ -96,6 +96,11 @@ services:
     hostname: '{{.Node.ID}}'
     env_file: dockerfiles/worker/.env # Deixei vazio para usar no futuro, se precisar.
     environment:
+    environment:
+      # https://github.com/sirodoht/opencult.com/issues/43
+      # Atenção para não colocar " nessas variáveis
+      - CELERY_BROKER_URL=amqp://owl:owl@rabbitmq
+      - CELERY_RESULT_BACKEND:rpc://
       - C_FORCE_ROOT=true
     depends_on:
       - rabbitmq 
