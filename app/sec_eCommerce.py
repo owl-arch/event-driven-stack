@@ -51,128 +51,123 @@ from worker.eCommerce.payment import *  # Pagamento
 #from worker.eCommerce.deliver import *  # ENTREGA
 
 ##
-# Reporter
+# Define a class 'event'
 ##
-verbose = True
+class event:
 
-def show_config():
-  if verbose:
-    print("")
-    print(f"{TIMEOUT = }, {RETRIES = }")
-    
-#def task_fail():
-# # Creio que seria interessante colocar AQUI um estatistica de falhas 
-#  # de Eventos para alimentar um painel de FRACASSOS no Phometeus/Grafana
-#  if verbose:
-#    print(f"## Order {order_id} :: {event} :: FAILURE :: {exc}")   
+  def __init__(self, order_id, verbose=True):
+    self.id      = order_id
+    self.verbose = verbose # True = Detalhes das ações SAGA
+    self.timeout = 5 # em segundos
+    self.retries = 3 # tentativas
+    self.action  = "Event".ljust(7)
+    #if self.verbose:
+    #  print("")
+    #  print(f"{self.timeout = }, {self.retries = }\n")
+     
+  def run(self, check, process):
+    try:
+      task_run = process.delay(order_id)   # deliver_product.delay(order_id) # Processamento Assíncrono
+      task_return = task_run.get(self.timeout)   # Evento Resultante
+      if "reverse" in process.__name__: 
+        self.action="Reverse".ljust(7)
+      if task_return == check:  
+        log.saga_logger.info(f"{self.id} :: {self.action} :: {task_run.get().ljust(20)} :: {task_run.state} :: {task_run.id}")
+      if self.verbose:  
+        print(f"** {self.id} :: {self.action} :: {task_run.get().ljust(20)} :: {task_run.state} :: {task_run.id}")
+        # print(f"{task_run.ready() = }")
+    except Exception as exc:
+      log.saga_logger.info(f"{order_id} :: {self.action} :: {task_run.get().ljust(20)} :: FAILURE :: {exc}") 
+      # Creio que seria interessante colocar AQUI um estatistica de falhas 
+      # de Eventos para alimentar um painel de FRACASSOS no Phometeus/Grafana
+      if self.verbose:
+        print(f"## {self.id} :: {self.action} :: {check.ljust(20)} :: FAILURE :: {exc}")   
+      return
+    finally:
+      time.sleep(0.001)
 
-def Event(event, process):
+##
+# Order  
+##
+def order(order_id): 
+  ORDER = event(order_id)
   try:
-    task_run = process.delay(order_id)   # deliver_product.delay(order_id) # Processamento Assíncrono
-    task_event = task_run.get(TIMEOUT)   # Evento Resultante
-    if task_event == event:  
-      log.saga_logger.info(f"Order {order_id} :: {task_run.get().ljust(20)} :: {task_run.state} :: {task_run.id}")
-    if verbose:  
-      print(f"** Order {order_id} :: {task_run.get().ljust(20)} :: {task_run.state} :: {task_run.id}")
-      # print(f"{task_run.ready() = }")
+    ORDER.run( "Pedido Criado", create_order )
   except Exception as exc:
-    log.saga_logger.info(f"Order {order_id} :: {task_run.get().ljust(20)} :: FAILURE :: {exc}") 
-    # Creio que seria interessante colocar AQUI um estatistica de falhas 
-    # de Eventos para alimentar um painel de FRACASSOS no Phometeus/Grafana
-    if verbose:
-      print(f"## Order {order_id} :: {event} :: FAILURE :: {exc}")   
-    return
+    log.saga_logger.info(f"{ORDER.id} :: {'SAGA'.ljust(7)} :: {'Falha ao Gerar PEDIDO'.ljust(20)} :: FAILURE :: {exc}")
+    if ORDER.verbose:
+      print(f"## {ORDER.id} :: {'SAGA'.ljust(7)} :: {'Falha ao Gerar PEDIDO'.ljust(20)} :: FAILURE :: {exc}")  
+    exit()
   finally:
     time.sleep(0.001)
 
 ##
-# Variáveis 
+# Product
 ##
-order_id = "ABC123"
-TIMEOUT = 5 # em segundos
-RETRIES = 3 # tentativas
+def product(order_id): 
+  PRODUCT = event(order_id) 
+  try:
+    PRODUCT.run( "Produto Separado", separate_product )
+  except Exception as exc:
+    log.saga_logger.info(f"{PRODUCT.id} :: {'SAGA'.ljust(7)} :: {'Falha na Separação do PRODUTO'.ljust(20)} :: FAILURE :: {exc}")
+    if PRODUCT.verbose:
+      print(f"## {PRODUCT.id} :: {'SAGA'.ljust(7)} :: {'Falha na Separação'.ljust(20)} :: FAILURE :: {exc}") 
+    PRODUCT.run( "Pedido Cancelado", reverse_create_order )
+    exit()
+  finally:
+    time.sleep(0.001)    
 
 ##
-# Lógica para execução do SEC do eCommerce
+# Payment
+##
+def payment(order_id):
+  PAYMENT = event(order_id) 
+  try:
+    PAYMENT.run( "Pagamento Efetuado", process_payment )
+  except Exception as exc:
+    log.saga_logger.info(f"{PAYMENT.id} :: {'SAGA'.ljust(7)} :: {'Falha no PAGAMENTO'.ljust(20)} :: FAILURE :: {exc}")
+    if PAYMENT.verbose:
+      print(f"## {PAYMENT.id} :: {'SAGA'.ljust(7)} :: {'Falha no PAGAMENTO'.ljust(20)} :: FAILURE :: {exc}")
+    PAYMENT.run( "Produto Devolvido", reverse_separate_product )
+    PAYMENT.run( "Pedido Cancelado",  reverse_create_order )
+    exit()
+  finally:
+    time.sleep(0.001)
+  
+##
+# Deliver
+##
+def deliver(order_id):
+  DELIVER = event(order_id) 
+  try:
+    DELIVER.run( "Entrega em Andamento", deliver_product )
+  except Exception as exc:
+    log.saga_logger.info(f"{DELIVER.id} :: {'SAGA'.ljust(7)} :: {'Falha na ENTREGA'.ljust(20)} :: FAILURE :: {exc}") 
+    if DELIVER.verbose:
+      print(f"## {DELIVER.id} :: {'SAGA'.ljust(7)} :: {'Falha na ENTREGA'.ljust(20)} :: FAILURE :: {exc}") 
+    DELIVER.run( "Pagamento Revertido", reverse_process_payment )
+    DELIVER.run( "Produto Devolvido",   reverse_separate_product )
+    DELIVER.run( "Pedido Cancelado",    reverse_create_order )
+    exit()
+  finally:
+    time.sleep(0.001)    
+
+##
+# Lógica para execução do 'SAGA Execution Coordinator' do eCommerce
 ## 
-try:
-  show_config()
-         
-  ##
-  # Order  
-  ##
+def SEC(order_id):
   try:
-    Event( "Pedido Criado", create_order )
-    #task_run = create_order.delay(order_id) # Processamento Assíncrono
-    #task_event = task_run.get(TIMEOUT)      # Evento Resultante
-    #if task_event == event:  
-    #  log.saga_logger.info(f"Order {order_id} :: {task_run.get().ljust(20)} :: {task_run.state} :: {task_run.id}") 
-    #verbose()
+    order(order_id)
+    product(order_id)
+    payment(order_id)
+    deliver(order_id) 
   except Exception as exc:
-    log.saga_logger.info(f"Order {order_id} :: {'Falha ao Gerar PEDIDO'.ljust(20)} :: FAILURE :: {exc}")
-    if verbose:
-      print(f"## Order {order_id} :: {'Falha ao Gerar PEDIDO'.ljust(20)} :: FAILURE :: {exc}")  
-    #task_fail()
-    exit()
+    log.saga_logger.info(f"{SAGA.id} :: {'Falha no SAGA'.ljust(20)} :: FAILURE  :: {exc}") 
   finally:
+    # Creio que seria interessante colocar AQUI uma estatistica de vendas 
+    # concluidas com SUCESSO para um painel de vendas no Phometeus/Grafana.
     time.sleep(0.001)
-    
-  ##
-  # Product
-  ##
-  try:
-    Event( "Produto Separado", separate_product )
-  except Exception as exc:
-    log.saga_logger.info(f"Order {order_id} :: {'Falha na Separação do PRODUTO'.ljust(20)} :: FAILURE :: {exc}")
-    if verbose:
-      print(f"## Order {order_id} :: {'Falha na Separação do PRODUTO'.ljust(20)} :: FAILURE :: {exc}") 
-    Event( "Pedido Cancelado", reverse_create_order )
-    #task_fail()
-    exit()
-  finally:
-    time.sleep(0.001)
- 
-  ##
-  # Payment
-  ##
-  try:
-    Event( "Pagamento Efetuado", process_payment )
-  except Exception as exc:
-    log.saga_logger.info(f"Order {order_id} :: {'Falha no PAGAMENTO'.ljust(20)} :: FAILURE :: {exc}")
-    if verbose:
-      print(f"## Order {order_id} :: {'Falha no PAGAMENTO'.ljust(20)} :: FAILURE :: {exc}")
-    Event( "Produto Devolvido",   reverse_separate_product )
-    Event( "Pedido Cancelado",    reverse_create_order )
-    task_fail()
-    #exit()
-  finally:
-    time.sleep(0.001)
-    
-  ##
-  # Deliver
-  ##
-  try:
-    Event( "Entrega em Andamento", deliver_product )
-  except Exception as exc:
-    log.saga_logger.info(f"Order {order_id} :: {'Falha na ENTREGA'.ljust(20)} :: FAILURE :: {exc}") 
-    if verbose:
-      print(f"## Order {order_id} :: {'Falha na ENTREGA'.ljust(20)} :: FAILURE :: {exc}") 
-    Event( "Pagamento Revertido", reverse_process_payment )
-    Event( "Produto Devolvido",   reverse_separate_product )
-    Event( "Pedido Cancelado",    reverse_create_order )
-    #task_fail()
-    exit()
-  finally:
-    time.sleep(0.001)
-    
-except Exception as exc:
-  log.saga_logger.info(f"Order {order_id} :: {'Falha no SAGA'.ljust(20)} :: FAILURE  :: {exc}") 
+    print("")
 
-finally:
-  # Creio que seria interessante colocar AQUI uma estatistica de vendas 
-  # concluidas com SUCESSO para um painel de vendas no Phometeus/Grafana.
-  time.sleep(0.001)
-  print("")
-
-
-
+order_id = "ABC123"
+SEC(order_id)
