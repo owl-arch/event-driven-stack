@@ -153,6 +153,7 @@ fi
 ##--------------------##
 # command: "poetry run celery worker -A app.worker.celery_worker -l info -Q test-queue -c 1"
 # /home/celery/.local/bin/celery -A worker.tasks worker
+# /home/celery/.local/bin/celery --app worker.eCommerce.load worker
 ${CELERY} \
   --app worker.default.load worker \
   --hostname default@%h \
@@ -195,7 +196,7 @@ ${CELERY} \
 #  eCommerce (Comercio Eletronico)  ##
 #-----------------------------------##
 ${CELERY} \
-  --app worker.eCommerce.load worker \
+  --app worker.eCommerce.saga worker \
   --hostname eCommerce@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
@@ -217,6 +218,7 @@ ${CELERY} \
 #  --queues scheduler \
 #  --concurrency 2 \
 #  --pool prefork &  
+
 
 #${CELERY} -A beat beat -q  -s /home/celery/log/celerybeat-schedule &  
 

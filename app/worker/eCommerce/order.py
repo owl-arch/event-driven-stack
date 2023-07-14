@@ -11,8 +11,8 @@ import os
 import time
 
 # Configuração da Aplicação 
-from worker.config import app
-from worker.config import setup
+from worker.config import app, setup
+from worker.eCommerce.log import setlog as log
 
 ##---------------##
 ##  P E D I D O  ##
@@ -20,11 +20,15 @@ from worker.config import setup
 
 # Lógica para criar um Pedido de Venda
 @app.task
-def create_order(order_id): 
-    return "Pedido Criado"
+def create( id ): 
+    event = "Pedido Criado"
+    log.saga_logger.info(f"{'Action Event'.ljust(14)} :: {id} :: {event}")
+    return event
 
 # Lógica para reverter a criação do pedido
 @app.task
-def reverse_create_order(order_id):
-    return "Pedido Cancelado"   
+def reverse_create( id ):
+    event = "Pedido Cancelado"
+    log.saga_logger.info(f"{'Reversal Event'.ljust(14)} :: {id} :: {event}")
+    return event   
 

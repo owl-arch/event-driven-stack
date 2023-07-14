@@ -1,0 +1,5 @@
+2023-07-12 12:23:38,464 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
+2023-07-12 12:31:41,752 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
+2023-07-12 12:34:34,719 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
+2023-07-12 12:37:42,541 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
+2023-07-12 12:38:03,000 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment

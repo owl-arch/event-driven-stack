@@ -1,110 +1,183 @@
+##
+# Author: Marcos Antônio de Carvalho (marcos.antonio.carvalho@gmail.com)
+# Descr.: Template para orquestramento de eventos de microsserviços
+#         utilizando o padrão SAGA.
 #---
 # Author: Marcos Antonio de Carvalho 
 #  eMAil: marcos.antonio.carvalho@gmail.com
-# Descr.: Tratamento do SAGA Execution Coordinator
+# Descr.: Tratamento do SAGA Execution Coordinator do eCommerce
 #---
-# saga.py
+# sec_eCommerce.py
+
+##
+# Pattern SAGA: É Um padrão de design para garantir consistência em sistemas
+#               distribuídos com múltiplas bases de dados (como microsserviços).
+##
+# SEC - SAGA Execution Coordinator
+#
+# - É a fonte da verdade com relação ao status da execução das diversas "sagas" 
+#   como dos eventos de venda, por exemplo:
+#              pedido emitido --> pedido faturado --> produto 
+#              separado -->  produto embarcado --> produto entregue.
+#
+# - Pode operar também para interfacear consulta sobre esse status dos
+#   eventos dos microsserviços.
+#
+# - Define-se aqui tambem o timeout e reentry dos eventos dos microsserviços.
+#
+# ORQUESTRAMENTO: De forma geral é mais flexivel e mais poderosa 
+#
+##
+# Descomplicando "Sagas"
+# https://www.youtube.com/watch?v=jMBfO52FttY&t=383s    
+#
+##
+# Descomplicando – SAGA Pattern
+# https://natanpf.com/2021/08/28/descomplicando-saga-pattern/
+##
 
 import os
 import time
-#import logging
+import random 
 
 # Configuração da Aplicação 
-from worker.config import app
-from worker.config import setup
+from worker.config import app, setup
 from worker.eCommerce.log import setlog as log
 
 # Carrega as funções do processamento Online do Workers eCommerce.
-from worker.eCommerce.order   import *  # Tratamento de PEDIDO de Venda
-from worker.eCommerce.product import *  # Tratamento da Movimentação de PRODUTOS
+from worker.eCommerce.order   import *  # PEDIDO de Venda
+from worker.eCommerce.product import *  # Movimentação de PRODUTOS
+from worker.eCommerce.payment import *  # Pagamento
+from worker.eCommerce.deliver import *  # ENTREGA
 
-# Lógica para execução do SAGA
-@app.task
-def saga_execution(order_id):
-    #
-    TIMEOUT = 1 
-    #
-    # Função encapsulada no bloco try-except.
-    #
-    # As tarefas são chamadas sequencialmente usando método
-    # .get() para bloquear e aguardar a conclusão de cada
-    # tarefa antes de chamar a próxima.
+###
+# Running WebAPI Side 
+# Executado no Servidor WebAPI
+##
+
+# Define a class 'event'
+class task_event:
+
+  def __init__(self, id, verbose=True):
+    self.id      = id
+    self.verbose = verbose # True = Detalhes das ações SAGA
+    self.timeout = 5 # em segundos
+    self.retries = 3 # tentativas
+    self.action  = 'Action Event'.ljust(14)
+    #if self.verbose:
+    #  print("")
+    #  print(f"{self.timeout = }, {self.retries = }\n")
+
+  def execution(self, eProcess, eReturn):
     try:
-        # Execução do SAGA
-        
-
-        # Assinatura da Tarefa/Task
-        create_order_signature = app.signature("worker.eCommerce.order.create_order")
-        log.saga_logger.info(f"Order signature ->  {create_order_signature    = }")
-
-        # Envia a Tarefa/Task para processamento
-        create_order_run = create_order_signature.delay(order_id)
-        
-        # Recupera o ID da Tarefa/Task
-        log.saga_logger.info(f"Order Instance -->  { create_order_run.id      = }")
-
-        # Recupera a mensagem de retorno da Tarefa/Task
-        #result = create_order_run.get()
-        #log.saga_logger.info(f"Order {order_id}: {result}")
-        
-        
-        log.saga_logger.info(f"Order Ready ----->  {create_order_run.ready() = }")
-        log.saga_logger.info(f"Order Ready ----->  {create_order_run.state   = }")
-        #log.saga_logger.info(f"Order Result ---->  {create_order_run.get()   = }")
-
-        #if result != "Pedido Criado":
-        #  reverse_separate_product.delay(order_id)
-        #  return
-        log.saga_logger.info(f"Order {order_id}: Pedido Criado") 
-
-
-
-        # Assinatura da Tarefa/Task
-        separate_product_signature = app.signature("worker.eCommerce.order.separate_product")
-        log.saga_logger.info(f"Product signature ->  {separate_product_signature    = }")
-        # Envia a Tarefa/Task para processamento
-        separate_product_run = separate_product.delay(order_id)
-
-        # Recupera a mensagem de retorno da Tarefa/Task
-        #separate_product_result = separate_product_run.get(TIMEOUT)
-        #log.saga_logger.info(f"Order {order_id}: {separate_product_result =}")
-        log.saga_logger.info(f"Product Ready ----->  {create_order_run.ready() = }")
-        log.saga_logger.info(f"Product Ready ----->  {create_order_run.state   = }")
-        
-        #if create_order_result != "Produto Separado":
-        #  reverse_separate_product.delay(order_id)
-        #  reverse_create_order.delay(order_id)
-        #  return
-        log.saga_logger.info(f"Order {order_id}: Produto Separado") 
-
-        #process_payment.delay(order_id)
-        #deliver_product.delay(order_id)
-        #app.log.info(f"Pedido {order_id} concluído com sucesso")
-        #logger.info(f"Pedido {order_id} concluído com sucesso")
-        log.saga_logger.info(f"Pedido {order_id}: concluído com sucesso")
-    #except Exception as e:
+      ###
+      # Running Worker Side 
+      # Executando no Servidor Worker
+      ##
+      # Processamento Assíncrono
+      wRun = eProcess.delay( self.id )
+      # Recebe o Evento Resultante
+      wReturn = wRun.get(self.timeout)   
+      # Verifica se é uma ação de reversão
+      if "reverse" in eProcess.__name__: 
+        self.action='Reversal Event'.ljust(14)
+      # Verifica se Evento Resultante está correto
+      if wReturn == eReturn:  
+        log.saga_logger.info(f"{self.id} :: {self.action} :: {wRun.get().ljust(20)} :: {wRun.state} :: {wRun.id}")
+      # Verbose / Detail
+      if self.verbose:  
+        print(f"** {self.id} :: {self.action} :: {wRun.get().ljust(20)} :: {wRun.state} :: {wRun.id}")
+        # print(f"{wRun.ready() = }")
     except Exception as exc:
-        # Reverter as etapas do Saga em caso de falha
-        #reverse_deliver_product.delay(order_id)
-        #reverse_process_payment.delay(order_id)
-        #reverse_separate_product.delay(order_id)
-        #reverse_create_order.delay(order_id)
+      log.saga_logger.info(f"{self.id} :: {self.action} :: {wRun.get().ljust(20)} :: FAILURE :: {exc}") 
+      # Creio que seria interessante colocar AQUI um estatistica de falhas 
+      # de Eventos para alimentar um painel de FRACASSOS no Phometeus/Grafana
+      if self.verbose:
+        print(f"## {self.id} :: {self.action} :: {check.ljust(20)} :: FAILURE :: {exc}")   
+      return
+    finally:
+      time.sleep(0.001)
 
-        #reverse_separate_product.result = reverse_separate_product.delay(order_id)
-        #reverse_separate_product.result.get()
-        #log.saga_logger.info(f"Order {order_id}: Produto Devolvido")
+# SAGA Execution Coordinator
+# Order - Criação do Pedido 
+def secOrder(id): 
+  ORDER = task_event(id)
+  try:
+    ORDER.execution( create, "Pedido Criado" )
+  except Exception as exc:
+    log.saga_logger.info(f"{ORDER.id} :: {'SAGA failure'.ljust(14)} :: {'Falha ao Gerar PEDIDO'.ljust(20)} :: {exc}")
+    if ORDER.verbose:
+      print(f"## {ORDER.id} :: {'SAGA failure'.ljust(14)} :: {'Falha ao Gerar PEDIDO'.ljust(20)} :: {exc}")  
+    return
+  finally:
+    time.sleep(0.001)
 
 
-        #reverse_create_order.result = reverse_create_order.delay(order_id)
-        #reverse_create_order.result.get()
-        #log.saga_logger.info(f"Order {order_id}: Pedido Cancelado")
-        
-        #app.log.error(f"Pedido {order_id} falhou: {e}")
-        #logger.error(f"Pedido {order_id} falhou: {e}")
-        #log.saga_logger.error(f"Order {order_id} falhou: {e}")
-        log.saga_logger.error(f"Order {order_id} falhou: {exc=}")
+# SAGA Execution Coordinator
+# Product - Separação do Produto
+def secProduct(id): 
+  PRODUCT = task_event(id) 
+  try:
+    PRODUCT.execution( separate, "Produto Separado" )
+  except Exception as exc:
+    log.saga_logger.info(f"{PRODUCT.id} :: {'SAGA failure'.ljust(14)} :: {'Falha na Separação'.ljust(20)} :: {exc}")
+    if PRODUCT.verbose:
+      print(f"## {PRODUCT.id} :: {'SAGA failure'.ljust(14)} :: {'Falha na Separação'.ljust(20)} :: {exc}") 
+    DELIVER.execution( reverse_create,   "Pedido Cancelado", )
+    return
+  finally:
+    time.sleep(0.001)    
 
-        # re-levanta a exceção original para que ela possa ser 
-        # tratada em outro lugar, se necessário.
-        raise e
+# SAGA Execution Coordinator
+# Payment - Pagamento do Pedido
+def secPayment(id):
+  PAYMENT = task_event(id) 
+  try:
+    PAYMENT.execution( payment, "Pagamento Efetuado" )
+  except Exception as exc:
+    log.saga_logger.info(f"{PAYMENT.id} :: {'SAGA failure'.ljust(14)} :: {'Falha no PAGAMENTO'.ljust(20)} :: {exc}")
+    if PAYMENT.verbose:
+      print(f"## {PAYMENT.id} :: {'SAGA failure'.ljust(14)} :: {'Falha no PAGAMENTO'.ljust(20)} :: {exc}")
+    DELIVER.execution( reverse_separate, "Produto Devolvido", )
+    DELIVER.execution( reverse_create,   "Pedido Cancelado", )
+    return
+  finally:
+    time.sleep(0.001)
 
+# SAGA Execution Coordinator
+# Deliver - Entrega do Pedido
+def secDeliver(id):
+  DELIVER = task_event(id) 
+  try:
+    DELIVER.execution( deliver, "Entrega em Andamento" )
+  except Exception as exc:
+    log.saga_logger.info(f"{DELIVER.id} :: {'SAGA failure'.ljust(14)} :: {'Falha na ENTREGA'.ljust(20)} :: {exc}") 
+    if DELIVER.verbose:
+      print(f"## {DELIVER.id} :: {'SAGA failure'.ljust(14)} :: {'Falha na ENTREGA'.ljust(20)} ::{exc}") 
+    DELIVER.execution( reverse_payment,  "Pagamento Revertido" )
+    DELIVER.execution( reverse_separate, "Produto Devolvido", )
+    DELIVER.execution( reverse_create,   "Pedido Cancelado", )
+    return
+  finally:
+    time.sleep(0.001)    
+
+##
+# Lógica para execução do 'SAGA Execution Coordinator' do eCommerce
+## 
+#@app.task
+#def task_event(id):
+#  try:
+#    order(id)
+#    product(id)
+#    payment(id)
+#    deliver(id) 
+#  except Exception as exc:
+#    log.saga_logger.info(f"{id} :: {'Falha no SAGA'.ljust(20)} :: FAILURE  :: {exc}") 
+#  finally:
+#    # Creio que seria interessante colocar AQUI uma estatistica de vendas 
+#    # concluidas com SUCESSO para um painel de vendas no Phometeus/Grafana.
+#    time.sleep(0.001)
+#    print("")
+
+#id = "ABC123"
+#task_event(id)

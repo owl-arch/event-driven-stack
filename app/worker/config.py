@@ -24,6 +24,7 @@
 
 import os
 from celery import Celery
+from celery import chain
 
 # Inicialize o objeto Celery
 app = Celery(

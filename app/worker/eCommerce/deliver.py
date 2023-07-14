@@ -11,8 +11,8 @@ import os
 import time
 
 # Configuração da Aplicação 
-from worker.config import app
-from worker.config import setup
+from worker.config import app, setup
+from worker.eCommerce.log import setlog as log
 
 ##-----------------##
 ##  E N T R E G A  ##
@@ -20,11 +20,16 @@ from worker.config import setup
 
 # Lógica para entregar o produto
 @app.task
-def deliver_product(order_id):
-    return "Entrega em Andamento"
-
+def deliver( id ):
+    event = "Entrega em Andamento"
+    log.saga_logger.info(f"{'Action Event'.ljust(14)} :: {id} :: {event}")
+    return event
+    
 # Lógica para reverter a entrega do produto
 @app.task
-def reverse_deliver_product(order_id):
-    return "Entrega Concluida"   
+def reverse_deliver( id ):
+    event = "Entrega Concluida"   
+    log.saga_logger.info(f"{'Reversal Event'.ljust(14)} :: {id} :: {event}")
+    return event
+    
 

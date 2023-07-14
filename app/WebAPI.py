@@ -18,16 +18,17 @@ import time
 import random
 from celery import Celery
 
+# Configuração da Aplicação 
+from worker.config import app, setup
+from worker.eCommerce.log import setlog as log
 
 ##-----------------------------------------------------------##
 ##  É OBRIGATóRIO importar as funções das tasks dos workers  ##
 ##-----------------------------------------------------------##
-
 # Carrega as funções do processamento Online 
-from worker.eCommerce.load import * # SAGA e-commerce
+from worker.eCommerce.saga import * # SAGA e-commerce
 from worker.default.load   import * # Processamento normal (Default)
 from worker.long.load      import * # Processamento demorados (too long)
-
 
 ##--------------------------------------------##
 ##  Interfaceamento da FastAPI para o Celery  ##
@@ -39,16 +40,39 @@ import uvicorn
 # Biblioteca de API Rest   WebFastAPI WebAPI
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+#from fastapi.responses import JsonResponse
+from fastapi.responses import ORJSONResponse
 
 app_route = FastAPI(title="Python, FastAPI, and Docker")
 
 # Roteamento do eCommerce
-@app_route.get("/sale")
-def read_test():
+@app_route.get("/eCommerce/{id}", response_class=ORJSONResponse)
+def eCommerce(id):
+    ##
     # SAGA Execution Coordinator
-    saga_execution.delay('123')
-    return {"eCommerce": "SAGA Execution Coordinator"}
-
+    # Lógica para execução do eCommerce
+    ## 
+    #order_id = "ABC123"
+    order_id = id
+    
+    try:
+        secOrder(order_id)
+        secProduct(order_id)
+        secPayment(order_id)
+        secDeliver(order_id) 
+        # return JsonResponse( 
+        return ORJSONResponse([
+            {"eCommerce": order_id},
+            {"Status": "SUCCESS"}
+        ])
+    except Exception as exc:
+        log.saga_logger.info(f"{order_id} :: {'Falha no SEC'.ljust(14)} :: {exc}") 
+        return {"eCommerce": "SEC --> FAILURE"}
+    finally:
+        # Creio que seria interessante colocar AQUI uma estatistica de vendas 
+        # concluidas com SUCESSO para um painel de vendas no Phometeus/Grafana.
+        time.sleep(0.001)
+       
 
 @app_route.get("/config/", response_class=HTMLResponse)
 async def show_config():
@@ -101,8 +125,7 @@ def test_result():
 
     # Execute o cálculo assíncrono da série de Fibonacci
     # process = fibonacci.delay(12)
-    #process = fibonacci.apply_async((12, ), 
-    #                                retry=True, 
+    #process = fibonacci.apply_async 
     #                                retry_policy={
     #                                             'max_retries': 3,
     #                                             'retry_errors': (TimeoutError, ),

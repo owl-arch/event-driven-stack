@@ -11,8 +11,8 @@ import os
 import time
 
 # Configuração da Aplicação 
-from worker.config import app
-from worker.config import setup
+from worker.config import app, setup
+from worker.eCommerce.log import setlog as log
 
 ##---------------------##
 ##  P A G A M E N T O  ##
@@ -20,11 +20,15 @@ from worker.config import setup
 
 # Lógica para processar o pagamento
 @app.task
-def process_payment(order_id):
-    return "Pagamento Efetuado"
+def payment( id ):
+    event = "Pagamento Efetuado"
+    log.saga_logger.info(f"{'Action Event'.ljust(14)} :: {id} :: {event}")
+    return event
 
 # Lógica para reverter o processamento do pagamento
 @app.task
-def reverse_process_payment(order_id):
-    return "Pagamento Revertido"   
-
+def reverse_payment( id ):
+    event = "Pagamento Revertido"
+    log.saga_logger.info(f"{'Reversal Event'.ljust(14)} :: {id} :: {event}")
+    return event
+    
