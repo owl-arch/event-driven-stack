@@ -42,13 +42,13 @@ import random
 
 # Configuração da Aplicação 
 from worker.config import app, setup
-from worker.eCommerce.log import setlog as log
+from worker.OwlCommerce.log import setlog as log
 
 # Carrega as funções do processamento Online do Workers eCommerce.
-from worker.eCommerce.order   import *  # PEDIDO de Venda
-from worker.eCommerce.product import *  # Movimentação de PRODUTOS
-from worker.eCommerce.payment import *  # Pagamento
-from worker.eCommerce.deliver import *  # ENTREGA
+from worker.OwlCommerce.orders     import *  # PEDIDO de Venda
+from worker.OwlCommerce.products   import *  # Movimentação de PRODUTOS
+from worker.OwlCommerce.payments   import *  # Pagamento
+#from worker.OwlCommerce.deliveries import *  # ENTREGA
 
 ###
 # Running WebAPI Side 

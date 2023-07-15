@@ -196,11 +196,11 @@ ${CELERY} \
 #  eCommerce (Comercio Eletronico)  ##
 #-----------------------------------##
 ${CELERY} \
-  --app worker.eCommerce.saga worker \
-  --hostname eCommerce@%h \
+  --app worker.OwlCommerce.saga worker \
+  --hostname OwlCommerce@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
-  --queues eCommerce  \
+  --queues OwlCommerce  \
   --time-limit 15 \
   --concurrency 2 \
   --prefetch-multiplier 6 \

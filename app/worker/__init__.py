@@ -1,2 +1,2 @@
-__all__ = [ "config", "scheduler","default", "long", "eCommerce"]
+__all__ = [ "config", "scheduler","default", "long", "OwlCommerce"]
 

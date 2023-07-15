@@ -20,15 +20,15 @@ from celery import Celery
 
 # Configuração da Aplicação 
 from worker.config import app, setup
-from worker.eCommerce.log import setlog as log
+from worker.OwlCommerce.log import setlog as log
 
 ##-----------------------------------------------------------##
 ##  É OBRIGATóRIO importar as funções das tasks dos workers  ##
 ##-----------------------------------------------------------##
 # Carrega as funções do processamento Online 
-from worker.eCommerce.saga import * # SAGA e-commerce
-from worker.default.load   import * # Processamento normal (Default)
-from worker.long.load      import * # Processamento demorados (too long)
+from worker.default.load     import * # Processamento normal (Default)
+from worker.long.load        import * # Processamento demorados (too long)
+from worker.OwlCommerce.saga import * # SAGA e-commerce
 
 ##--------------------------------------------##
 ##  Interfaceamento da FastAPI para o Celery  ##
@@ -46,7 +46,8 @@ from fastapi.responses import ORJSONResponse
 app_route = FastAPI(title="Python, FastAPI, and Docker")
 
 # Roteamento do eCommerce
-@app_route.get("/eCommerce/{id}", response_class=ORJSONResponse)
+#@app_route.get("/OwlCommerce/{id}", response_class=ORJSONResponse)
+@app_route.get("/OwlCommerce/{id}")
 def eCommerce(id):
     ##
     # SAGA Execution Coordinator
@@ -60,11 +61,12 @@ def eCommerce(id):
         secProduct(order_id)
         secPayment(order_id)
         secDeliver(order_id) 
+        return {"eCommerce": "SEC --> SUCCESS"}
         # return JsonResponse( 
-        return ORJSONResponse([
-            {"eCommerce": order_id},
-            {"Status": "SUCCESS"}
-        ])
+        #return ORJSONResponse([
+        #    {"eCommerce": order_id},
+        #    {"Status": "SUCCESS"}
+        #])
     except Exception as exc:
         log.saga_logger.info(f"{order_id} :: {'Falha no SEC'.ljust(14)} :: {exc}") 
         return {"eCommerce": "SEC --> FAILURE"}

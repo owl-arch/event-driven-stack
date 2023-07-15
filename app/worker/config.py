@@ -70,10 +70,15 @@ class setup:
         ##--------------------------------##
         task_routes = ([
              # Os roteadores são consultados em ordem.
-            ('worker.default.*',   {'queue': 'default',   }),
-            ('worker.long.*',      {'queue': 'long',      }),
-            ('worker.scheduler.*', {'queue': 'scheduler', }),
-            ('worker.eCommerce.*', {'queue': 'eCommerce', }),
+            ('worker.default.*',     {'queue': 'default',   }),
+            ('worker.long.*',        {'queue': 'long',      }),
+            ('worker.scheduler.*',   {'queue': 'scheduler', }),
+            ('worker.OwlCommerce.*', {'queue': 'OwlCommerce', }),
+            ('orders.*', {'queue': 'OwlCommerce', }),
+            ('products.*', {'queue': 'OwlCommerce', }),
+            ('payments.*', {'queue': 'OwlCommerce', }),
+            ('deliveries.*', {'queue': 'OwlCommerce', }),
+            
         ],)
         ##
         # https://celeryproject.readthedocs.io/zh_CN/latest/userguide/configuration.html
