@@ -17,15 +17,15 @@ alias make="dc up -d; dc ps"
 alias mk=make
 
 # Log do Worker 
-alias wlog="figlet 'worker Log' | lolcat; docker exec -it task-consumer-worker sh -c 'tail -f /home/celery/log/common.log'"
+alias wlog="figlet 'worker Log' | lolcat; docker exec -it worker-consumer sh -c 'tail -f /home/celery/log/common.log'"
 
 # Comando no Worker 
-alias wls="figlet 'worker Lister' | lolcat; docker exec -it task-consumer-worker sh -c 'ls -l  $@'"
-alias wll="figlet 'worker Lister' | lolcat; docker exec -it task-consumer-worker sh -c 'ls -la $@'"
+alias wls="figlet 'worker Lister' | lolcat; docker exec -it worker-consumer sh -c 'ls -l  $@'"
+alias wll="figlet 'worker Lister' | lolcat; docker exec -it worker-consumer sh -c 'ls -la $@'"
 
 # Shell do Consumer(Worker) e do Producer(postman)
-alias  server="figlet 'Server' | lolcat; docker exec -it task-producer-webapi sh -c '/bin/sh'"
-alias  worker="figlet 'Worker' | lolcat; docker exec -it task-consumer-worker  sh -c '/bin/sh'"
+alias  server="figlet 'Server' | lolcat; docker exec -it worker-producer sh -c '/bin/sh'"
+alias  worker="figlet 'Worker' | lolcat; docker exec -it worker-consumer sh -c '/bin/sh'"
 
 
 

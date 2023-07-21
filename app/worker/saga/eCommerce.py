@@ -42,15 +42,15 @@ import random
 
 # Configuração da Aplicação 
 from worker.config import app, setup
-from worker.OwlCommerce.log import setlog as log
+from worker.log    import setlog as log
 
 # Carrega as funções do processamento Online do Workers eCommerce.
-from worker.OwlCommerce.orders     import *  # PEDIDO de Venda
-from worker.OwlCommerce.products   import *  # Movimentação de PRODUTOS
-from worker.OwlCommerce.payments   import *  # Pagamento
-#from worker.OwlCommerce.deliveries import *  # ENTREGA
+from worker.sales.orders         import *  # PEDIDO de Venda
+from worker.stock.products       import *  # Movimentação de PRODUTOS
+from worker.finance.payments     import *  # Pagamento
+#from worker.logistics.deliveries import *  # ENTREGA
 
-###
+### 
 # Running WebAPI Side 
 # Executado no Servidor WebAPI
 ##
@@ -69,25 +69,45 @@ class task_event:
     #  print(f"{self.timeout = }, {self.retries = }\n")
 
   def execution(self, eProcess, eReturn):
+    ###
+    # Running Worker Side 
+    # Executando no Servidor Worker
+    ###
+
+    # Debug
+    # print(f"{self.id = }")
+    # print(f"{eProcess = }")
+    # print(f"{eReturn = }")
     try:
-      ###
-      # Running Worker Side 
-      # Executando no Servidor Worker
+      
       ##
       # Processamento Assíncrono
-      wRun = eProcess.delay( self.id )
+      try:
+        global wRun
+        wRun = eProcess.delay( self.id )
+      except Exception as exc:  
+        print(f"{exc=} ")
+      
+      ##
       # Recebe o Evento Resultante
-      wReturn = wRun.get(self.timeout)   
+      wReturn = wRun.get(self.timeout)  
+      
+      ##
       # Verifica se é uma ação de reversão
       if "reverse" in eProcess.__name__: 
         self.action='Reversal Event'.ljust(14)
+
+      ##
       # Verifica se Evento Resultante está correto
       if wReturn == eReturn:  
         log.saga_logger.info(f"{self.id} :: {self.action} :: {wRun.get().ljust(20)} :: {wRun.state} :: {wRun.id}")
+      
+      ##
       # Verbose / Detail
       if self.verbose:  
         print(f"** {self.id} :: {self.action} :: {wRun.get().ljust(20)} :: {wRun.state} :: {wRun.id}")
         # print(f"{wRun.ready() = }")
+
     except Exception as exc:
       log.saga_logger.info(f"{self.id} :: {self.action} :: {wRun.get().ljust(20)} :: FAILURE :: {exc}") 
       # Creio que seria interessante colocar AQUI um estatistica de falhas 
@@ -95,8 +115,9 @@ class task_event:
       if self.verbose:
         print(f"## {self.id} :: {self.action} :: {check.ljust(20)} :: FAILURE :: {exc}")   
       return
+    
     finally:
-      time.sleep(0.001)
+      time.sleep(0.000)
 
 # SAGA Execution Coordinator
 # Order - Criação do Pedido 
@@ -110,7 +131,7 @@ def secOrder(id):
       print(f"## {ORDER.id} :: {'SAGA failure'.ljust(14)} :: {'Falha ao Gerar PEDIDO'.ljust(20)} :: {exc}")  
     return
   finally:
-    time.sleep(0.001)
+    time.sleep(0.000)
 
 
 # SAGA Execution Coordinator
@@ -126,7 +147,7 @@ def secProduct(id):
     DELIVER.execution( reverse_create,   "Pedido Cancelado", )
     return
   finally:
-    time.sleep(0.001)    
+    time.sleep(0.000)    
 
 # SAGA Execution Coordinator
 # Payment - Pagamento do Pedido
@@ -142,7 +163,7 @@ def secPayment(id):
     DELIVER.execution( reverse_create,   "Pedido Cancelado", )
     return
   finally:
-    time.sleep(0.001)
+    time.sleep(0.000)
 
 # SAGA Execution Coordinator
 # Deliver - Entrega do Pedido
@@ -159,25 +180,5 @@ def secDeliver(id):
     DELIVER.execution( reverse_create,   "Pedido Cancelado", )
     return
   finally:
-    time.sleep(0.001)    
+    time.sleep(0.000)    
 
-##
-# Lógica para execução do 'SAGA Execution Coordinator' do eCommerce
-## 
-#@app.task
-#def task_event(id):
-#  try:
-#    order(id)
-#    product(id)
-#    payment(id)
-#    deliver(id) 
-#  except Exception as exc:
-#    log.saga_logger.info(f"{id} :: {'Falha no SAGA'.ljust(20)} :: FAILURE  :: {exc}") 
-#  finally:
-#    # Creio que seria interessante colocar AQUI uma estatistica de vendas 
-#    # concluidas com SUCESSO para um painel de vendas no Phometeus/Grafana.
-#    time.sleep(0.001)
-#    print("")
-
-#id = "ABC123"
-#task_event(id)

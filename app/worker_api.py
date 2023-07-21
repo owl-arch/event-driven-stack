@@ -20,15 +20,15 @@ from celery import Celery
 
 # Configuração da Aplicação 
 from worker.config import app, setup
-from worker.OwlCommerce.log import setlog as log
+from worker.log import setlog as log
 
 ##-----------------------------------------------------------##
 ##  É OBRIGATóRIO importar as funções das tasks dos workers  ##
 ##-----------------------------------------------------------##
 # Carrega as funções do processamento Online 
-from worker.default.load     import * # Processamento normal (Default)
-from worker.long.load        import * # Processamento demorados (too long)
-from worker.OwlCommerce.saga import * # SAGA e-commerce
+#from worker.default.load import * # Processamento normal (Default)
+from worker.long.load      import * # Processamento demorados (too long)
+from worker.saga.eCommerce import * # SAGA e-commerce
 
 ##--------------------------------------------##
 ##  Interfaceamento da FastAPI para o Celery  ##
@@ -47,10 +47,10 @@ app_route = FastAPI(title="Python, FastAPI, and Docker")
 
 # Roteamento do eCommerce
 #@app_route.get("/OwlCommerce/{id}", response_class=ORJSONResponse)
-@app_route.get("/OwlCommerce/{id}")
+@app_route.get("/eCommerce/{id}")
 def eCommerce(id):
     ##
-    # SAGA Execution Coordinator
+    # SEC - Saga Execution Coordinator
     # Lógica para execução do eCommerce
     ## 
     #order_id = "ABC123"

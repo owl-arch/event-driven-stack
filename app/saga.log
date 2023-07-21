@@ -1,5 +1,3 @@
-2023-07-12 12:23:38,464 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
-2023-07-12 12:31:41,752 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
-2023-07-12 12:34:34,719 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
-2023-07-12 12:37:42,541 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
-2023-07-12 12:38:03,000 :: ABC123 :: SAGA    :: Falha ao Gerar PEDIDO :: FAILURE :: local variable 'task_run' referenced before assignment
+2023-07-21 12:06:11,117 :: ABC123 :: SAGA failure   :: Falha ao Gerar PEDIDO :: name 'wRun' is not defined
+2023-07-21 12:06:17,198 :: ABC123 :: SAGA failure   :: Falha na Separação   :: name 'wRun' is not defined
+2023-07-21 12:06:17,199 :: ABC123 :: Falha no SAGA        :: FAILURE  :: name 'DELIVER' is not defined

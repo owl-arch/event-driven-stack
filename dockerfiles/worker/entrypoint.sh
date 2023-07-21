@@ -154,15 +154,15 @@ fi
 # command: "poetry run celery worker -A app.worker.celery_worker -l info -Q test-queue -c 1"
 # /home/celery/.local/bin/celery -A worker.tasks worker
 # /home/celery/.local/bin/celery --app worker.eCommerce.load worker
-${CELERY} \
-  --app worker.default.load worker \
-  --hostname default@%h \
-  --loglevel info \
-  --logfile /home/celery/log/%n_%i.log \
-  --time-limit 15 \
-  --concurrency 2 \
-  --prefetch-multiplier 6 \
-  --pool prefork &
+#${CELERY} \
+#  --app worker.default.load worker \
+#  --hostname default@%h \
+#  --loglevel info \
+#  --logfile /home/celery/log/%n_%i.log \
+#  --time-limit 15 \
+#  --concurrency 2 \
+#  --prefetch-multiplier 6 \
+#  --pool prefork &
   #
   # --app tasks worker \
   #
@@ -176,6 +176,12 @@ ${CELERY} \
   #--pidfile /home/celery/run/default_%n.pid \
   #--logfile /home/celery/log/%n_%i.log \
   #--pidfile /home/celery/run/%n.pid \  
+
+
+###
+# Os Workers trabalharam com nas 
+# filas que estão inscritos.
+###
 
 #-----------------------------##
 #  TOO LOG (demasiado longo)  ##
@@ -196,16 +202,55 @@ ${CELERY} \
 #  eCommerce (Comercio Eletronico)  ##
 #-----------------------------------##
 ${CELERY} \
-  --app worker.OwlCommerce.saga worker \
-  --hostname OwlCommerce@%h \
+  --app worker.sales.orders worker \
+  --hostname sales@%h \
   --loglevel info \
   --logfile /home/celery/log/%n_%i.log \
-  --queues OwlCommerce  \
+  --queues sales  \
   --time-limit 15 \
   --concurrency 2 \
   --prefetch-multiplier 6 \
   --pool prefork &
+  #--queues sales  \
 
+${CELERY} \
+  --app worker.stock.products worker \
+  --hostname stock@%h \
+  --loglevel info \
+  --logfile /home/celery/log/%n_%i.log \
+  --queues stock  \
+  --time-limit 15 \
+  --concurrency 2 \
+  --prefetch-multiplier 6 \
+  --pool prefork &
+  #--queues stock  \
+
+${CELERY} \
+  --app worker.finance.payments  worker \
+  --hostname finance@%h \
+  --loglevel info \
+  --logfile /home/celery/log/%n_%i.log \
+  --queues finance \
+  --time-limit 15 \
+  --concurrency 2 \
+  --prefetch-multiplier 6 \
+  --pool prefork &
+  #--queues finance  \
+
+ ${CELERY} \
+  --app worker.logistics.deliveries worker \
+  --hostname logistics@%h \
+  --loglevel info \
+  --logfile /home/celery/log/%n_%i.log \
+  --queues logistics  \
+  --time-limit 15 \
+  --concurrency 2 \
+  --prefetch-multiplier 6 \
+  --pool prefork & 
+  #--queues logistics  \
+
+
+ # --queues eCommerce  \
 #----------------##
 #  BEAT (Batch)  ##
 #----------------##

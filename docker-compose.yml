@@ -66,15 +66,15 @@ services:
     networks:
       backend:
 
-  webapi:
+  worker_api:
     build: 
       context: .
       dockerfile: dockerfiles/webapi/Dockerfile
-    image: owl-arch/webapi:events-driven-stack
-    container_name: 'task-producer-webapi'
-    hostname: webapi
+    image: owl-arch/worker_api:events-driven-stack
+    container_name: 'worker-producer'
+    hostname: worker_api
     entrypoint: python
-    command: ./WebAPI.py  
+    command: ./worker_api.py  
     # user: nobody # Restrição de acesso 
     ports:
       - 8000:8000      
@@ -89,7 +89,7 @@ services:
     build: 
       context: .
       dockerfile: dockerfiles/worker/Dockerfile
-    container_name: 'task-consumer-worker'
+    container_name: 'worker-consumer'
     #image: celery:services_domain
     #hostname: A
     image: owl-arch/worker:events-driven-stack

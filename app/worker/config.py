@@ -60,7 +60,7 @@ class setup:
         # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_create_missing_queues
         # Se habilitado (padrão), qualquer fila especificada que não esteja definida
         # em task_queues será criada automaticamente.
-        task_create_missing_queues = "disable"
+        #task_create_missing_queues = "disable"
         ##
         # Routing Tasks
         # https://docs.celeryq.dev/en/stable/userguide/routing.html
@@ -69,17 +69,20 @@ class setup:
         ##  Lista de ROTEADORES de Tasks  ##
         ##--------------------------------##
         task_routes = ([
-             # Os roteadores são consultados em ordem.
-            ('worker.default.*',     {'queue': 'default',   }),
-            ('worker.long.*',        {'queue': 'long',      }),
-            ('worker.scheduler.*',   {'queue': 'scheduler', }),
-            ('worker.OwlCommerce.*', {'queue': 'OwlCommerce', }),
-            ('orders.*', {'queue': 'OwlCommerce', }),
-            ('products.*', {'queue': 'OwlCommerce', }),
-            ('payments.*', {'queue': 'OwlCommerce', }),
-            ('deliveries.*', {'queue': 'OwlCommerce', }),
-            
+          # Os roteadores são consultados em ordem.
+          #
+          # Enxerga a rota do nome da task
+          # Ex.: @app.task(name='sales.orders.create',)
+          ('sales.*',     { 'queue': 'sales',     }), # roteia todas iniciadas com sales para fila sales
+          ('stock.*',     { 'queue': 'stock',     }),
+          ('finance.*',   { 'queue': 'finance',   }),
+          ('logistics.*', { 'queue': 'logistics', }),
+          ('*.long.*',    { 'queue': 'long',      }),
         ],)
+          #('worker.default.*',     {'queue': 'default',   }),
+          #
+          #('worker.scheduler.*',   {'queue': 'scheduler', }),
+          #('worker.OwlCommerce.*', {'queue': 'OwlCommerce', }),
         ##
         # https://celeryproject.readthedocs.io/zh_CN/latest/userguide/configuration.html
         # True: Task vai relatar 'started' quando a tarefa for executada por um worker.
