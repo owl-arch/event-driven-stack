@@ -66,15 +66,15 @@ services:
     networks:
       backend:
 
-  worker_api:
+  worker_gatekeeper:
     build: 
       context: .
-      dockerfile: dockerfiles/webapi/Dockerfile
-    image: owl-arch/worker_api:events-driven-stack
+      dockerfile: dockerfiles/gatekeeper/Dockerfile
+    image: owl-arch/gatekeeper:events-driven-stack
     container_name: 'worker-producer'
-    hostname: worker_api
+    hostname: gatekeeper
     entrypoint: python
-    command: ./worker_api.py  
+    command: ./gatekeeper.py  
     # user: nobody # Restrição de acesso 
     ports:
       - 8000:8000      

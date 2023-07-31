@@ -46,7 +46,7 @@ WORKDIR /home/celery
 FROM base as builder
 
 # Lista dos requisitos minimos
-COPY --chown=1000:1000 dockerfiles/webapi/requirements /code/requirements
+COPY --chown=1000:1000 dockerfiles/gatekeeper/requirements /code/requirements
 
 # Instalando as dependencias para gerar um cache
 RUN pip install --no-cache-dir --upgrade -r /code/requirements
