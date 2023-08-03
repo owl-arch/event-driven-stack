@@ -6,7 +6,7 @@
 🚀  *Arquitetura de Microsserviços Orientada a Eventos* ou Event-Driven Architecture (EDA) está no centro da arquitetura de alta performance, escalonável e robusta em tempo real. 
 
 <div style="display: inline_block">
-  <img align="right" alt="eda.png" style="border-radius: 100%; width: 54%; height:auto;" src="https://github.com/dev-carvalho/event-driven-stack/blob/main/image/eda.png">
+  <img align="right" alt="event-driven.png" style="border-radius: 10%; width: 54%; height:auto;" src="https://github.com/dev-carvalho/event-driven-stack/blob/main/image/event-driven.png">
 </div>
 
 💡 A dica é quebrar as dependências entre os domínios de serviços e introduzir uma arquitetura orientada a eventos em que os eventos são roteados na forma de mensagem por meio de um sistema de mensageria (Message Broker). 
@@ -16,10 +16,6 @@
 ✨ A magia da alta performance vem da introdução de multiplos Workers que buscam no sistema de mensageria as ações dos eventos (tasks) para processamento assíncrono. 
 
 ### Como essa stack vai funciona?
-
-<div style="display: inline_block">
-  <img align="right" alt="event-driven.png" style="border-radius: 10%; width: 54%; height:auto;" src="https://github.com/dev-carvalho/event-driven-stack/blob/main/image/event-driven.png">
-</div>
 
 1. O cliente envia uma solicitação para nosso aplicativo postman.py (FastAPI).
 2. O aplicativo postman.py (FastAPI) envia a mensagem de task/tarefa (tarefa) para o message broker.
