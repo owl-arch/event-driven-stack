@@ -42,7 +42,9 @@ Em nosso PlayGround de containers Docker temos:
 ### Como instalar?
 - passo 1: clone o repositório event-driven-stack<br>
 
-`git clone git@github.com:dev-carvalho/event-driven-stack.git`
+`git clone git@github.com:owl-arch/event-driven-stack.git`
+ou
+`git clone https://github.com/owl-arch/event-driven-stack`
 
 - passo 2: executando eda-stack
 ```bash
