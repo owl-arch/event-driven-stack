@@ -18,10 +18,10 @@
 ### Como essa stack vai funciona?
 
 1. O cliente envia uma solicitação para nosso aplicativo gatekeeper.py (FastAPI).
-2. O aplicativo gatekeeper.py (FastAPI) envia a mensagem de task/tarefa (tarefa) para o message broker.
-3. Os workers/trabalhadores de celery consomem as mensagens do message broker. Após a conclusão da task/tarefa, o worker/trabalhador salva o resultado no  Backend e atualiza o status da task/tarefa.
-4. Depois de enviar a task/tarefa para o message broker, o aplicativo FastAPI também pode monitorar o status da tarefa no Result Backend.
-5. Flower também pode monitorar as tasks/tarefas do aplicativo celery processando mensagens no message broker.
+2. O aplicativo gatekeeper.py (FastAPI) envia a mensagem de task (tarefa) para o message broker.
+3. Os workers (trabalhadores) do celery consomem as mensagens do message broker. Após a conclusão da task (tarefa), o worker (trabalhador) salva o resultado no  Backend e atualiza o status da task (tarefa).
+4. Depois de enviar a task (tarefa) para o message broker, o aplicativo gatekeeper.py (FastAPI) também pode monitorar o status da task (tarefa) no Result Backend.
+5. Flower também pode monitorar as tasks (tarefas) do celery processando mensagens no message broker.
 
 ### Qual foi ambiente caseiro (Home-Office) de Desenvolvimento?
 - Windows 10
