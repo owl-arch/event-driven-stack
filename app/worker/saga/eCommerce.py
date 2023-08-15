@@ -49,8 +49,9 @@ from worker.sales.orders import *  # PEDIDO de Venda
 from worker.stock.products import *  # Movimentação de PRODUTOS
 from worker.finance.payments import *  # Pagamento
 ##
-# Foi comentado para simular uma falha!
+# Algumas vezes é comentado para simular/testar uma falha!
 # from worker.logistics.deliveries import *  # ENTREGA
+##
 
 ###
 # Running WebAPI Side
