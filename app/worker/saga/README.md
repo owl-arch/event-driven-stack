@@ -1,4 +1,5 @@
-🚀  *SAGA Pattern - Transações Distribuídas
+# 🚀  *SAGA Pattern* - Transações Distribuídas
+
 
 Inspirado nas transações de longa duração (LLTs) de 1987, SAGA Pattern é uma forma de gerenciar a consistência de dados entre microsserviços em cenários de transação distribuída. SAGA é uma sequência de transações que atualiza cada serviço e publica uma mensagem ou evento para disparar a próxima etapa de transação. Se uma etapa falhar, a saga executará transações compensatórias que contrariam as transações anteriores. 
 
